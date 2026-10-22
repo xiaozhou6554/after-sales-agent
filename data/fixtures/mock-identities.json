@@ -1,0 +1,308 @@
+{
+ "schema_version": "1.0",
+ "fixture_version": "mock-v2",
+ "synthetic_only": true,
+ "accounts": [
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "cust-north-01",
+   "subject_id": "customer-north-01",
+   "role": "customer",
+   "scopes": [
+    "order:read",
+    "payment:read",
+    "logistics:read",
+    "knowledge:read",
+    "refund:read",
+    "refund:request",
+    "return:read",
+    "ticket:create",
+    "ticket:read",
+    "ticket:update",
+    "order:address:update"
+   ],
+   "team_ids": [],
+   "allowed_customer_ids": [
+    "CUSTOMER-01"
+   ]
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "cust-north-02",
+   "subject_id": "customer-north-02",
+   "role": "customer",
+   "scopes": [
+    "order:read",
+    "payment:read",
+    "logistics:read",
+    "knowledge:read",
+    "refund:read",
+    "refund:request",
+    "return:read",
+    "ticket:create",
+    "ticket:read",
+    "ticket:update",
+    "order:address:update"
+   ],
+   "team_ids": [],
+   "allowed_customer_ids": [
+    "CUSTOMER-02"
+   ]
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "support-north-01",
+   "subject_id": "support-north-01",
+   "role": "support",
+   "scopes": [
+    "customer:read",
+    "order:read",
+    "payment:read",
+    "logistics:read",
+    "knowledge:read",
+    "refund:read",
+    "return:read",
+    "ticket:create",
+    "ticket:read",
+    "ticket:update"
+   ],
+   "team_ids": [
+    "team-north-support"
+   ],
+   "allowed_customer_ids": [
+    "CUSTOMER-01",
+    "CUSTOMER-02",
+    "CUSTOMER-03",
+    "CUSTOMER-05",
+    "SYN-CUSTOMER-N-01-001",
+    "SYN-CUSTOMER-N-01-002"
+   ]
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "agent-north-01",
+   "subject_id": "human-agent-north-01",
+   "role": "human_agent",
+   "scopes": [
+    "customer:read",
+    "order:read",
+    "logistics:read",
+    "refund:read",
+    "return:read",
+    "knowledge:read",
+    "ticket:read",
+    "ticket:update",
+    "handoff:read",
+    "handoff:accept"
+   ],
+   "team_ids": [
+    "team-north-front"
+   ],
+   "allowed_customer_ids": []
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "sup-north-01",
+   "subject_id": "supervisor-north-01",
+   "role": "supervisor",
+   "scopes": [
+    "customer:read",
+    "order:read",
+    "logistics:read",
+    "refund:read",
+    "refund:review",
+    "analytics:read",
+    "ticket:read",
+    "ticket:assign",
+    "ticket:status"
+   ],
+   "team_ids": [
+    "team-north-support",
+    "team-north-front"
+   ],
+   "allowed_customer_ids": [
+    "CUSTOMER-01",
+    "CUSTOMER-02",
+    "CUSTOMER-03",
+    "CUSTOMER-05",
+    "SYN-CUSTOMER-N-01-001",
+    "SYN-CUSTOMER-N-01-002"
+   ]
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "ops-north-01",
+   "subject_id": "operations-north-01",
+   "role": "operations",
+   "scopes": [
+    "incident:read",
+    "analytics:read",
+    "customer:read",
+    "order:read",
+    "payment:read",
+    "logistics:read",
+    "refund:read",
+    "return:read"
+   ],
+   "team_ids": [],
+   "allowed_customer_ids": [
+    "*"
+   ]
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "admin-north-01",
+   "subject_id": "admin-north-01",
+   "role": "admin",
+   "scopes": [
+    "audit:read"
+   ],
+   "team_ids": [],
+   "allowed_customer_ids": [
+    "*"
+   ]
+  },
+  {
+   "tenant_id": "tenant-south",
+   "account_id": "cust-south-91",
+   "subject_id": "customer-south-91",
+   "role": "customer",
+   "scopes": [
+    "order:read",
+    "payment:read",
+    "logistics:read",
+    "knowledge:read",
+    "refund:read",
+    "refund:request",
+    "return:read",
+    "ticket:create",
+    "ticket:read",
+    "ticket:update",
+    "order:address:update"
+   ],
+   "team_ids": [],
+   "allowed_customer_ids": [
+    "CUSTOMER-91"
+   ]
+  },
+  {
+   "tenant_id": "tenant-south",
+   "account_id": "support-south-01",
+   "subject_id": "support-south-01",
+   "role": "support",
+   "scopes": [
+    "customer:read",
+    "order:read",
+    "payment:read",
+    "logistics:read",
+    "knowledge:read",
+    "refund:read",
+    "return:read",
+    "ticket:create",
+    "ticket:read",
+    "ticket:update"
+   ],
+   "team_ids": [
+    "team-south-support"
+   ],
+   "allowed_customer_ids": [
+    "CUSTOMER-91"
+   ]
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "wh-north-01",
+   "subject_id": "warehouse-north-01",
+   "role": "warehouse",
+   "scopes": [
+    "customer:read",
+    "order:read",
+    "return:read",
+    "warehouse:receive",
+    "warehouse:inspect"
+   ],
+   "team_ids": [
+    "team-north-warehouse"
+   ],
+   "allowed_customer_ids": [
+    "CUSTOMER-01",
+    "CUSTOMER-02",
+    "CUSTOMER-03",
+    "CUSTOMER-05",
+    "SYN-CUSTOMER-N-01-001",
+    "SYN-CUSTOMER-N-01-002"
+   ]
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "svc-pay-north-01",
+   "subject_id": "payment-service-north-01",
+   "role": "payment",
+   "scopes": [
+    "customer:read",
+    "order:read",
+    "return:read",
+    "refund:read",
+    "refund:execute"
+   ],
+   "team_ids": [],
+   "allowed_customer_ids": [
+    "CUSTOMER-01",
+    "CUSTOMER-02",
+    "CUSTOMER-03",
+    "CUSTOMER-05",
+    "SYN-CUSTOMER-N-01-001",
+    "SYN-CUSTOMER-N-01-002"
+   ]
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "svc-ontology-north-01",
+   "subject_id": "ontology-publisher-north-01",
+   "role": "ontology",
+   "scopes": [
+    "analytics:read",
+    "ontology:manage"
+   ],
+   "team_ids": [],
+   "allowed_customer_ids": []
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "svc-analytics-north-01",
+   "subject_id": "analytics-reader-north-01",
+   "role": "analytics",
+   "scopes": [
+    "analytics:read"
+   ],
+   "team_ids": [],
+   "allowed_customer_ids": []
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "svc-supervisor-north-01",
+   "subject_id": "incident-supervisor-north-01",
+   "role": "supervisor",
+   "scopes": [
+    "analytics:read",
+    "incident:read",
+    "incident:manage"
+   ],
+   "team_ids": [],
+   "allowed_customer_ids": []
+  },
+  {
+   "tenant_id": "tenant-north",
+   "account_id": "svc-investigation-north-01",
+   "subject_id": "investigation-reader-north-01",
+   "role": "supervisor",
+   "scopes": [
+    "incident:read",
+    "analytics:read"
+   ],
+   "team_ids": [],
+   "allowed_customer_ids": []
+  }
+ ],
+ "note": "Mock 身份、团队成员与客户授权关系的一期受控来源（技术详细规格 27.3）；allowed_customer_ids 中的 * 仅允许 operations/admin 使用，表示租户内系统级只读范围。禁止客户端自行新增授权。"
+}

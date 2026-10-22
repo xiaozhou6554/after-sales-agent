@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# 测试与工具缓存
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# 环境变量与密钥（.env.example 为模板，可提交；真实 .env 禁止提交）
+.env
+.env.local
+.env.*.local
+
+# 可重建生成产物（data/generated 可随时由脚本重建，不作为基线）
+data/generated/
+
+# 前端
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# 日志与运行时文件
+*.log
+logs/
+*.pid
+
+# 操作系统杂项
+.DS_Store
+Thumbs.db

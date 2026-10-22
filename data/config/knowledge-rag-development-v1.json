@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "config_version": "synthetic-v2-development-v1",
+  "selection_split": "development",
+  "labels_sha256": "6d0c4e74437079bf5c897bcbc617cc4369c4c78d38a90f85cf706b8706655d61",
+  "corpus_sha256": "0ba961ce80c7a7d0b4ee942152df27a10f4fead0fe7b3aca3cfecb2b50b05d3b",
+  "reranker_model_id": "BAAI/bge-reranker-base",
+  "reranker_revision": "2cfc18c9415c912f9d8155881c133215df768a70",
+  "vector_calibration": {
+    "version": "synthetic-v2-vector-v1",
+    "points": [[0.2, 0.0], [0.4, 0.4], [0.8, 1.0]]
+  },
+  "bm25_calibration": {
+    "version": "synthetic-v2-bm25-v1",
+    "points": [[0.0, 0.0], [1.5, 0.3], [5.5, 1.0]]
+  },
+  "rerank_calibration": {
+    "version": "synthetic-v2-rerank-v1",
+    "points": [[-10.0, 0.0], [0.0, 0.5], [10.0, 1.0]]
+  },
+  "vector_weight": 0.7,
+  "bm25_weight": 0.3,
+  "vector_threshold": 0.3,
+  "bm25_threshold": 0.1,
+  "fused_threshold": 0.4,
+  "rerank_threshold": 0.55,
+  "vector_top_k": 20,
+  "bm25_top_k": 20,
+  "result_top_k": 3
+}

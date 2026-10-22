@@ -1,0 +1,150 @@
+{
+  "schema_version": "2.0",
+  "dataset_version": "mock-v2",
+  "reference_time": "2026-10-19T04:00:00.000Z",
+  "synthetic_only": true,
+  "seed": 20261019,
+  "counts": {
+    "scenarios": 149,
+    "requirements": 24,
+    "acceptance_tcs": 131,
+    "synthetic_order_bundles": 1000,
+    "synthetic_products": 10,
+    "business_records": 7094,
+    "business_record_counts": {
+      "products": 13,
+      "product_mappings": 36,
+      "orders": 1005,
+      "order_lines": 1005,
+      "shipment_batches": 1003,
+      "return_authorizations": 197,
+      "warehouse_receipts": 196,
+      "warehouse_inspections": 196,
+      "payments": 1004,
+      "payment_details": 1200,
+      "refund_details": 98,
+      "refund_executions": 135,
+      "metric_snapshots": 37,
+      "events": 941,
+      "traces": 12,
+      "anomaly_evidence": 16
+    },
+    "mock_fact_files": 1,
+    "source_systems": [
+      "OMS",
+      "PIM",
+      "PROJECTION",
+      "PAYMENT",
+      "WMS"
+    ],
+    "ontology_files": 4
+  },
+  "files": [
+    {
+      "path": "data/contracts/event-catalog.json",
+      "sha256": "91e164128531554ddc573d75b0aac8911a97b51963e2c6b76d3365c0ced586e4",
+      "bytes": 9366
+    },
+    {
+      "path": "data/contracts/events.schema.json",
+      "sha256": "b56cb6455d2c185eea8c8eeb63ebcd631fc79526ed4d9bc97ca3cdf02d3166dc",
+      "bytes": 27537
+    },
+    {
+      "path": "data/contracts/mcp-response.schema.json",
+      "sha256": "1c64e581e92c1596262580eb46c8eb3da1996bcacd40e7e16c57450ee2d42805",
+      "bytes": 61647
+    },
+    {
+      "path": "data/contracts/mcp-tools.json",
+      "sha256": "86ee501b687d0324eb8619fcdcf7ed64340d91fd7943aa6a4d29ae7431be5d9b",
+      "bytes": 23103
+    },
+    {
+      "path": "data/contracts/mcp-tools.schema.json",
+      "sha256": "024e0629c47e617df7708b06280a2a0748f0f5195cd7b5c2b2f66f4ada202b72",
+      "bytes": 1552
+    },
+    {
+      "path": "data/contracts/metric-approval-register.json",
+      "sha256": "678872ca397685584b34262b5bbf091ce9fcef2dd262f9e9f0a9f3a5bc7b93e3",
+      "bytes": 2709
+    },
+    {
+      "path": "data/contracts/mysql-core.sql",
+      "sha256": "4d4fecb635e7b9a37be382b94798f79810ba7a310595c89f6df313140b2926d5",
+      "bytes": 9513
+    },
+    {
+      "path": "data/contracts/openapi.yaml",
+      "sha256": "6a6a32b8190e7f49bc4de45cb02456012eb4d673ee7f605e8a5e56e121669ec1",
+      "bytes": 66075
+    },
+    {
+      "path": "data/contracts/security-baseline.json",
+      "sha256": "85387abd0e8a0ad90d08bc0a754637200b84a9f61950d440afa1d3564e8a88ff",
+      "bytes": 3512
+    },
+    {
+      "path": "data/knowledge/v2/corpus.json",
+      "sha256": "0ba961ce80c7a7d0b4ee942152df27a10f4fead0fe7b3aca3cfecb2b50b05d3b",
+      "bytes": 15663
+    },
+    {
+      "path": "data/knowledge/v2/evidence.json",
+      "sha256": "44948b8e7010e3a0fb3c6341ea34b54b450ed697a5b8590d298d0ac8d7c957c8",
+      "bytes": 7594
+    },
+    {
+      "path": "data/knowledge/v2/ontology/constraints.shacl.ttl",
+      "sha256": "1f4722b6b57798f97a9e670063e2e67724143a4e09cd2104ac2f951b9d5fe1a5",
+      "bytes": 5633
+    },
+    {
+      "path": "data/knowledge/v2/ontology/core.ttl",
+      "sha256": "6c2a293787cf6db11c80b1d80bd495dbcb5e04c044694e5b27a810e0a6375492",
+      "bytes": 2615
+    },
+    {
+      "path": "data/knowledge/v2/ontology/metrics.json",
+      "sha256": "df02b242cd8eab979db23c148cbdb7c1a7f0fe17d3fd6c2a632d464fdaea696f",
+      "bytes": 2462
+    },
+    {
+      "path": "data/knowledge/v2/ontology/source_mappings.json",
+      "sha256": "f8fc8c34aaea1ca43fcafa55a1b17b0a2ef5a376f7ea251ad2ddd0cf0b06c5f8",
+      "bytes": 9658
+    },
+    {
+      "path": "data/mock/v2/systems.json",
+      "sha256": "9b67d95ef794164739e844bc7b6107a46f669afa2fdbe000686fd79035cfdccf",
+      "bytes": 3223164
+    },
+    {
+      "path": "data/scenarios/expected-v2.schema.json",
+      "sha256": "10e29a128a7bbd256e6a390e242099f2b7186b9c5a3b60abb16a3655d6db380b",
+      "bytes": 5899
+    },
+    {
+      "path": "data/scenarios/v2/acceptance-test-map.csv",
+      "sha256": "5831bde9e555ce023ef3b47b372e6c295c5168d410473f7fbd2215bfce6c9f42",
+      "bytes": 12167
+    },
+    {
+      "path": "data/scenarios/v2/catalog.json",
+      "sha256": "74399e25e33d2e1a39f35c67e2366edfc7a9a1464a3b353f05fc5928a059a962",
+      "bytes": 1153
+    },
+    {
+      "path": "data/scenarios/v2/multi_system.jsonl",
+      "sha256": "73dea8a0ca7772f568b6ef0b7611786a7f2cc93bab3cbefd45934df74b9d0519",
+      "bytes": 279770
+    },
+    {
+      "path": "data/scenarios/v2/traceability.csv",
+      "sha256": "152a1d969a2fdcbdd964a1ab69252ad2fd313ff326163a4d28d10830773acb81",
+      "bytes": 9871
+    }
+  ],
+  "note": "仅供离线模拟开发与数据契约验证；1000条synthetic order bundles包含订单及关联跨系统事实，business_records为各业务数组记录数之和；source_systems表示事实来源命名空间，不代表独立运行进程；验收映射中的not_implemented表示尚无应用运行时测试。"
+}

@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:after-sales-agent:expected-v2",
+  "title": "After-sales scenario expected assertions v2",
+  "description": "Machine-checkable expected outcomes for isolated scenario evaluation. This contract does not authorize real external side effects.",
+  "type": "object",
+  "required": [
+    "assertion_mode",
+    "outcome_label",
+    "facts",
+    "tool_calls",
+    "effects",
+    "evidence_refs",
+    "forbidden",
+    "state",
+    "workflow_steps"
+  ],
+  "properties": {
+    "assertion_mode": {
+      "const": "structured_facts_tool_calls_effects_evidence_state"
+    },
+    "outcome_label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "operator",
+          "value"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operator": {
+            "enum": [
+              "equals",
+              "not_equals",
+              "in",
+              "exists",
+              "not_exists",
+              "gte",
+              "lte"
+            ]
+          },
+          "value": {}
+        },
+        "additionalProperties": false
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Verbatim acceptance outcome from the authoritative requirements table; does not count as an executed assertion."
+    },
+    "tool_calls": {
+      "type": "object",
+      "required": [
+        "must",
+        "may",
+        "must_not"
+      ],
+      "properties": {
+        "must": {
+          "$ref": "#/$defs/toolCallList"
+        },
+        "may": {
+          "$ref": "#/$defs/toolCallList"
+        },
+        "must_not": {
+          "$ref": "#/$defs/toolCallList"
+        }
+      },
+      "additionalProperties": false
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "system",
+          "action",
+          "expected"
+        ],
+        "properties": {
+          "system": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expected": {
+            "enum": [
+              "occur",
+              "not_occur",
+              "eventually_occur",
+              "unknown"
+            ]
+          },
+          "operation_id_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "details": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "forbidden": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "state": {
+      "type": "object",
+      "required": [
+        "review_status",
+        "return_status",
+        "funds_status"
+      ],
+      "properties": {
+        "review_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "return_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "funds_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "reference_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "workflow_steps": {
+      "type": "object",
+      "required": [
+        "must",
+        "may"
+      ],
+      "properties": {
+        "must": {
+          "$ref": "#/$defs/workflowStepList"
+        },
+        "may": {
+          "$ref": "#/$defs/workflowStepList"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "toolCallList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "tool_name",
+          "arguments",
+          "identity_ref"
+        ],
+        "properties": {
+          "tool_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "arguments": {
+            "type": "object"
+          },
+          "identity_ref": {
+            "const": "requester"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "workflowStepList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "operation_id",
+          "execution_layer",
+          "identity_ref",
+          "assertion"
+        ],
+        "properties": {
+          "operation_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "execution_layer": {
+            "enum": [
+              "application_use_case",
+              "external_system_api",
+              "agent_orchestration",
+              "ontology_service"
+            ]
+          },
+          "identity_ref": {
+            "enum": [
+              "supervisor_agent",
+              "warehouse_operator",
+              "payment_service",
+              "ontology_service"
+            ]
+          },
+          "assertion": {
+            "const": "required_path"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

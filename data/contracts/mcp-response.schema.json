@@ -1,0 +1,2881 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:after-sales-agent:mcp-response:v1",
+  "title": "MCP response envelope",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "request_id",
+    "correlation_id",
+    "trace_id",
+    "invocation_id",
+    "tool_name",
+    "status",
+    "parameter_summary",
+    "data",
+    "error"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "invocation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tool_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{1,63}$"
+    },
+    "status": {
+      "enum": [
+        "success",
+        "empty",
+        "partial",
+        "degraded",
+        "error"
+      ]
+    },
+    "error_code": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "parameter_summary": {
+      "type": "object",
+      "description": "Redacted, bounded summary; must not contain credentials, full address, or payment account data."
+    },
+    "data": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Tool-specific output DTO for non-error responses; null for error responses."
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      }
+    },
+    "error": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/error"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "error"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "error": {
+            "$ref": "#/$defs/error"
+          },
+          "error_code": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "error": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "query_order"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_query_order"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "query_payment"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_query_payment"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "query_tracking"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_query_tracking"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "query_logistics"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_query_logistics"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "check_delivery_exception"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_check_delivery_exception"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "search_knowledge_base"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_search_knowledge_base"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "query_knowledge_graph"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_query_knowledge_graph"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "search_hybrid_knowledge"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_search_hybrid_knowledge"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "get_policy_detail"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_get_policy_detail"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "check_refund_policy"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_check_refund_policy"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "check_shipping_address_change"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_check_shipping_address_change"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "calculate_refund"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_calculate_refund"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "create_refund_request"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_create_refund_request"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "query_refund_request"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_query_refund_request"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "create_ticket"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_create_ticket"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "query_ticket"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_query_ticket"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "handoff_to_human"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_handoff_to_human"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "query_after_sales_metrics"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_query_after_sales_metrics"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "explain_anomaly"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_explain_anomaly"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "query_shipping_address_change"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_query_shipping_address_change"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "update_shipping_address"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_update_shipping_address"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "update_ticket"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_update_ticket"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "query_return_progress"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_query_return_progress"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tool_name": {
+            "const": "query_refund_execution"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "empty",
+              "partial",
+              "degraded"
+            ]
+          }
+        },
+        "required": [
+          "tool_name",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/tool_data_query_refund_execution"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "error"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "error": {
+      "type": "object",
+      "required": [
+        "error_code",
+        "message",
+        "retryable"
+      ],
+      "properties": {
+        "error_code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "evidence_id",
+        "source_system",
+        "source_record_id",
+        "source_version"
+      ],
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_system": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_record_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "snapshot_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_query_order": {
+      "type": "object",
+      "required": [
+        "order",
+        "snapshot_version",
+        "observed_at"
+      ],
+      "properties": {
+        "order": {
+          "type": "object",
+          "required": [
+            "order_id",
+            "owner_customer_id",
+            "status",
+            "payment_status",
+            "fulfillment_status",
+            "currency",
+            "amount_minor"
+          ],
+          "properties": {
+            "order_id": {
+              "type": "string"
+            },
+            "owner_customer_id": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "payment_status": {
+              "type": "string"
+            },
+            "fulfillment_status": {
+              "type": "string"
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "amount_minor": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "snapshot_version": {
+          "type": "string"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_query_payment": {
+      "type": "object",
+      "required": [
+        "order_id",
+        "payment_status",
+        "paid_minor",
+        "refunded_minor",
+        "currency",
+        "payment_ids",
+        "snapshot_version",
+        "observed_at"
+      ],
+      "properties": {
+        "order_id": {
+          "type": "string"
+        },
+        "payment_status": {
+          "type": "string"
+        },
+        "payment_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "snapshot_version": {
+          "type": "string"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "paid_minor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "refunded_minor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_query_tracking": {
+      "type": "object",
+      "required": [
+        "tracking_number",
+        "status",
+        "events",
+        "exception_code",
+        "estimated_delivery_at",
+        "source_version",
+        "observed_at"
+      ],
+      "properties": {
+        "tracking_number": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "time",
+              "status",
+              "description"
+            ],
+            "properties": {
+              "time": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "status": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "exception_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "estimated_delivery_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_query_logistics": {
+      "type": "object",
+      "required": [
+        "order_id",
+        "shipments",
+        "observed_at"
+      ],
+      "properties": {
+        "order_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "shipments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "tracking_number",
+              "status",
+              "events",
+              "exception_code",
+              "estimated_delivery_at",
+              "source_version",
+              "observed_at"
+            ],
+            "properties": {
+              "tracking_number": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "events": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "time",
+                    "status",
+                    "description"
+                  ],
+                  "properties": {
+                    "time": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "exception_code": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "estimated_delivery_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_version": {
+                "type": "string"
+              },
+              "observed_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_check_delivery_exception": {
+      "type": "object",
+      "required": [
+        "order_id",
+        "has_exception",
+        "exceptions",
+        "source_version",
+        "observed_at"
+      ],
+      "properties": {
+        "order_id": {
+          "type": "string"
+        },
+        "has_exception": {
+          "type": "boolean"
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "exception_code",
+              "description",
+              "detected_at",
+              "evidence_refs"
+            ],
+            "properties": {
+              "exception_code": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "detected_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_search_knowledge_base": {
+      "type": "object",
+      "required": [
+        "route",
+        "query",
+        "knowledge_release_id",
+        "retrieval_status",
+        "vector_status",
+        "bm25_status",
+        "vector_error",
+        "bm25_error",
+        "vector_hit_count",
+        "bm25_hit_count",
+        "vector_duration_ms",
+        "bm25_duration_ms",
+        "config_version",
+        "vector_calibration_version",
+        "bm25_calibration_version",
+        "ranking_method",
+        "rerank_status",
+        "rerank_error",
+        "rerank_model_id",
+        "rerank_model_revision",
+        "rerank_calibration_version",
+        "generation_ready",
+        "results",
+        "evidence_refs",
+        "conflicts"
+      ],
+      "properties": {
+        "route": {
+          "const": "rag"
+        },
+        "query": {
+          "type": "string"
+        },
+        "knowledge_release_id": {
+          "type": "string"
+        },
+        "retrieval_status": {
+          "enum": [
+            "complete",
+            "partial",
+            "degraded",
+            "empty"
+          ]
+        },
+        "vector_status": {
+          "enum": [
+            "success",
+            "empty",
+            "failed"
+          ]
+        },
+        "bm25_status": {
+          "enum": [
+            "success",
+            "empty",
+            "failed"
+          ]
+        },
+        "vector_error": {
+          "type": ["string", "null"]
+        },
+        "bm25_error": {
+          "type": ["string", "null"]
+        },
+        "vector_hit_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bm25_hit_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "vector_duration_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "bm25_duration_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "config_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "vector_calibration_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bm25_calibration_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ranking_method": {
+          "enum": ["fused_score_only", "cross_encoder"]
+        },
+        "rerank_status": {
+          "enum": ["not_configured", "skipped_empty", "skipped_conflict", "error", "success"]
+        },
+        "rerank_error": {
+          "type": ["string", "null"]
+        },
+        "rerank_model_id": {
+          "type": ["string", "null"]
+        },
+        "rerank_model_revision": {
+          "type": ["string", "null"]
+        },
+        "rerank_calibration_version": {
+          "type": ["string", "null"]
+        },
+        "generation_ready": {
+          "type": "boolean"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "document_id",
+              "chunk_id",
+              "title",
+              "snippet",
+              "score",
+              "vector_score",
+              "bm25_score",
+              "rerank_score",
+              "rerank_relevance",
+              "retrieval_source",
+              "version",
+              "evidence_id"
+            ],
+            "properties": {
+              "document_id": {
+                "type": "string"
+              },
+              "chunk_id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "snippet": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "score": {
+                "type": "number"
+              },
+              "vector_score": {
+                "type": ["number", "null"]
+              },
+              "bm25_score": {
+                "type": ["number", "null"]
+              },
+              "rerank_score": {
+                "type": ["number", "null"]
+              },
+              "rerank_relevance": {
+                "type": ["number", "null"],
+                "minimum": 0,
+                "maximum": 1
+              },
+              "retrieval_source": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "vector",
+                    "bm25",
+                    "kg"
+                  ]
+                }
+              },
+              "version": {
+                "type": "string"
+              },
+              "evidence_id": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "conflicts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_query_knowledge_graph": {
+      "type": "object",
+      "required": [
+        "route",
+        "knowledge_release_id",
+        "graph_status",
+        "nodes",
+        "relations",
+        "evidence",
+        "evidence_refs"
+      ],
+      "properties": {
+        "route": {
+          "const": "kg"
+        },
+        "knowledge_release_id": {
+          "type": "string"
+        },
+        "graph_status": {
+          "enum": ["success", "empty"]
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "node_id",
+              "node_type",
+              "label",
+              "version"
+            ],
+            "properties": {
+              "node_id": {
+                "type": "string"
+              },
+              "node_type": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "from",
+              "relation_type",
+              "to",
+              "version",
+              "evidence_id"
+            ],
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "relation_type": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "evidence_id": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["evidence_id", "document_id", "source", "version"],
+            "properties": {
+              "evidence_id": {"type": "string"},
+              "document_id": {"type": "string"},
+              "source": {"type": "string"},
+              "version": {"type": "string"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_search_hybrid_knowledge": {
+      "type": "object",
+      "required": [
+        "route",
+        "knowledge_release_id",
+        "retrieval_status",
+        "rag_status",
+        "kg_status",
+        "rag_evidence",
+        "kg_evidence",
+        "merged_evidence",
+        "conflict_status",
+        "conflicts",
+        "generation_ready",
+        "evidence_refs"
+      ],
+      "properties": {
+        "route": {
+          "const": "hybrid"
+        },
+        "knowledge_release_id": {
+          "type": "string"
+        },
+        "retrieval_status": {
+          "enum": [
+            "complete",
+            "partial",
+            "degraded",
+            "empty"
+          ]
+        },
+        "rag_status": {
+          "enum": ["complete", "partial", "degraded", "empty", "error"]
+        },
+        "kg_status": {
+          "enum": ["success", "empty", "error"]
+        },
+        "rag_evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "document_id",
+              "chunk_id",
+              "title",
+              "snippet",
+              "score",
+              "retrieval_source",
+              "version",
+              "evidence_id"
+            ],
+            "properties": {
+              "document_id": {
+                "type": "string"
+              },
+              "chunk_id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "snippet": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "score": {
+                "type": "number"
+              },
+              "retrieval_source": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "vector",
+                    "bm25",
+                    "kg"
+                  ]
+                }
+              },
+              "version": {
+                "type": "string"
+              },
+              "evidence_id": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "kg_evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "from",
+              "relation_type",
+              "to",
+              "evidence_id",
+              "version"
+            ],
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "relation_type": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "evidence_id": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "merged_evidence": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": ["kind", "document_id", "chunk_id", "title", "snippet", "score", "retrieval_source", "version", "evidence_id"],
+                "properties": {
+                  "kind": {"const": "document"},
+                  "document_id": {"type": "string"},
+                  "chunk_id": {"type": "string"},
+                  "title": {"type": "string"},
+                  "snippet": {"type": "string", "maxLength": 4000},
+                  "score": {"type": "number"},
+                  "retrieval_source": {"type": "array", "items": {"enum": ["vector", "bm25"]}},
+                  "version": {"type": "string"},
+                  "evidence_id": {"type": "string"}
+                },
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "required": ["kind", "from", "relation_type", "to", "version", "evidence_id"],
+                "properties": {
+                  "kind": {"const": "relation"},
+                  "from": {"type": "string"},
+                  "relation_type": {"type": "string"},
+                  "to": {"type": "string"},
+                  "version": {"type": "string"},
+                  "evidence_id": {"type": "string"}
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "conflict_status": {
+          "enum": [
+            "none",
+            "hard_conflict",
+            "indexing_failed"
+          ]
+        },
+        "conflicts": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "generation_ready": {
+          "type": "boolean"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_get_policy_detail": {
+      "type": "object",
+      "required": [
+        "route",
+        "knowledge_release_id",
+        "match_status",
+        "policy",
+        "candidates",
+        "evidence_refs"
+      ],
+      "properties": {
+        "route": {"const": "policy"},
+        "knowledge_release_id": {"type": "string"},
+        "match_status": {
+          "enum": [
+            "found",
+            "ambiguous",
+            "not_found"
+          ]
+        },
+        "policy": {
+          "anyOf": [
+            {
+              "type": "object",
+              "required": [
+                "policy_id",
+                "policy_name",
+                "clauses",
+                "applicability",
+                "valid_from",
+                "valid_to",
+                "version",
+                "evidence_refs"
+              ],
+              "properties": {
+                "policy_id": {
+                  "type": "string"
+                },
+                "policy_name": {
+                  "type": "string"
+                },
+                "clauses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "applicability": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "valid_from": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "valid_to": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "version": {
+                  "type": "string"
+                },
+                "evidence_refs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "policy_id",
+              "policy_name",
+              "evidence_id"
+            ],
+            "properties": {
+              "policy_id": {
+                "type": "string"
+              },
+              "policy_name": {
+                "type": "string"
+              },
+              "evidence_id": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_check_refund_policy": {
+      "type": "object",
+      "required": [
+        "eligibility",
+        "can_submit",
+        "reason_code",
+        "policy_id",
+        "policy_version",
+        "order_version",
+        "evidence_refs",
+        "missing_information"
+      ],
+      "properties": {
+        "eligibility": {
+          "enum": [
+            "eligible",
+            "ineligible",
+            "manual_review",
+            "unknown"
+          ]
+        },
+        "can_submit": {
+          "type": "boolean"
+        },
+        "reason_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "policy_id": {
+          "type": "string"
+        },
+        "policy_version": {
+          "type": "string"
+        },
+        "order_version": {
+          "type": "string"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing_information": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_check_shipping_address_change": {
+      "type": "object",
+      "required": [
+        "eligible",
+        "order_id",
+        "order_version",
+        "denial_reasons",
+        "confirmation_required",
+        "evidence_refs"
+      ],
+      "properties": {
+        "eligible": {
+          "type": "boolean"
+        },
+        "order_id": {
+          "type": "string"
+        },
+        "order_version": {
+          "type": "string"
+        },
+        "denial_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confirmation_required": {
+          "type": "boolean"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_calculate_refund": {
+      "type": "object",
+      "required": [
+        "quote_id",
+        "amount_minor",
+        "currency",
+        "amount_breakdown",
+        "lines",
+        "policy_version",
+        "order_version",
+        "payment_version",
+        "expires_at",
+        "requires_manual_review"
+      ],
+      "properties": {
+        "quote_id": {
+          "type": "string"
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "amount_breakdown": {
+          "type": "object",
+          "required": [
+            "goods_amount_minor",
+            "freight_amount_minor"
+          ],
+          "properties": {
+            "goods_amount_minor": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "freight_amount_minor": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "order_line_id",
+              "quantity",
+              "goods_amount_minor",
+              "freight_amount_minor",
+              "amount_minor"
+            ],
+            "properties": {
+              "order_line_id": {
+                "type": "string"
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "goods_amount_minor": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "freight_amount_minor": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "amount_minor": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "policy_version": {
+          "type": "string"
+        },
+        "order_version": {
+          "type": "string"
+        },
+        "payment_version": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "requires_manual_review": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_create_refund_request": {
+      "type": "object",
+      "required": [
+        "refund_request_id",
+        "order_id",
+        "review_status",
+        "amount_minor",
+        "currency",
+        "funds_status",
+        "revision"
+      ],
+      "properties": {
+        "refund_request_id": {
+          "type": "string"
+        },
+        "order_id": {
+          "type": "string"
+        },
+        "review_status": {
+          "const": "pending_review"
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "funds_status": {
+          "const": "not_executed"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_query_refund_request": {
+      "type": "object",
+      "required": [
+        "query_status",
+        "refund_request"
+      ],
+      "properties": {
+        "query_status": {
+          "enum": [
+            "found",
+            "not_found",
+            "unknown"
+          ]
+        },
+        "refund_request": {
+          "anyOf": [
+            {
+              "type": "object",
+              "required": [
+                "refund_request_id",
+                "order_id",
+                "review_status",
+                "return_status",
+                "funds_status",
+                "amount_minor",
+                "currency",
+                "revision",
+                "updated_at"
+              ],
+              "properties": {
+                "refund_request_id": {
+                  "type": "string"
+                },
+                "order_id": {
+                  "type": "string"
+                },
+                "review_status": {
+                  "enum": [
+                    "pending_review",
+                    "reviewing",
+                    "approved",
+                    "rejected"
+                  ]
+                },
+                "return_status": {
+                  "type": "string"
+                },
+                "funds_status": {
+                  "enum": [
+                    "not_executed",
+                    "queued",
+                    "submitting",
+                    "processing",
+                    "unknown",
+                    "succeeded",
+                    "failed"
+                  ]
+                },
+                "amount_minor": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_create_ticket": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "status",
+        "priority",
+        "revision"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "in_progress",
+            "resolved",
+            "closed"
+          ]
+        },
+        "priority": {
+          "enum": [
+            "low",
+            "normal",
+            "high",
+            "urgent"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_query_ticket": {
+      "type": "object",
+      "required": [
+        "found",
+        "ticket"
+      ],
+      "properties": {
+        "found": {
+          "type": "boolean"
+        },
+        "ticket": {
+          "anyOf": [
+            {
+              "type": "object",
+              "required": [
+                "ticket_id",
+                "status",
+                "priority",
+                "revision",
+                "assigned_to",
+                "updated_at"
+              ],
+              "properties": {
+                "ticket_id": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "priority": {
+                  "type": "string"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "assigned_to": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_handoff_to_human": {
+      "type": "object",
+      "required": [
+        "handoff_id",
+        "status",
+        "ticket_id",
+        "summary_masked"
+      ],
+      "properties": {
+        "handoff_id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "requested",
+            "queued",
+            "accepted",
+            "unavailable",
+            "failed"
+          ]
+        },
+        "ticket_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary_masked": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_query_after_sales_metrics": {
+      "type": "object",
+      "required": [
+        "results",
+        "quality",
+        "evidence_refs"
+      ],
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "metric_id",
+              "dimension_values",
+              "numerator",
+              "denominator",
+              "value",
+              "quality",
+              "quality_issues",
+              "coverage",
+              "sample_size",
+              "as_of",
+              "watermarks",
+              "versions",
+              "evidence_refs",
+              "rank",
+              "ranking_eligible",
+              "excluded_reasons",
+              "default_ranking_candidate",
+              "definition_status"
+            ],
+            "properties": {
+              "metric_id": {
+                "type": "string"
+              },
+              "dimension_values": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "numerator": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "denominator": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "quality": {
+                "enum": [
+                  "complete",
+                  "provisional",
+                  "incomplete",
+                  "blocked"
+                ]
+              },
+              "quality_issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "coverage": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "sample_size": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "as_of": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "watermarks": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "versions": {
+                "type": "object",
+                "required": [
+                  "metric_version",
+                  "ontology_version",
+                  "mapping_version",
+                  "projection_snapshot_id"
+                ],
+                "properties": {
+                  "metric_version": {
+                    "type": "string"
+                  },
+                  "ontology_version": {
+                    "type": "string"
+                  },
+                  "mapping_version": {
+                    "type": "string"
+                  },
+                  "projection_snapshot_id": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "rank": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "ranking_eligible": {
+                "type": "boolean"
+              },
+              "excluded_reasons": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "default_ranking_candidate": {
+                "type": "boolean"
+              },
+              "definition_status": {
+                "enum": [
+                  "pending_business_finance_approval",
+                  "approved"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "quality": {
+          "enum": [
+            "complete",
+            "provisional",
+            "incomplete",
+            "blocked"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_explain_anomaly": {
+      "type": "object",
+      "required": [
+        "investigation_id",
+        "revision",
+        "anomaly_type",
+        "cause_status",
+        "findings",
+        "quality_issues",
+        "metric_version",
+        "ontology_version",
+        "mapping_version",
+        "snapshot_id",
+        "evidence_refs"
+      ],
+      "properties": {
+        "investigation_id": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "anomaly_type": {
+          "enum": [
+            "business_metric",
+            "cross_system_conflict",
+            "runtime_failure"
+          ]
+        },
+        "cause_status": {
+          "enum": [
+            "supported",
+            "inconclusive",
+            "data_quality_blocked"
+          ]
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "cause_code",
+              "explanation",
+              "contribution",
+              "evidence_refs"
+            ],
+            "properties": {
+              "cause_code": {
+                "type": "string"
+              },
+              "explanation": {
+                "type": "string"
+              },
+              "contribution": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "quality_issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "metric_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ontology_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mapping_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "snapshot_id": {
+          "type": "string"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_query_shipping_address_change": {
+      "type": "object",
+      "required": [
+        "address_change_id",
+        "order_id",
+        "status",
+        "expected_order_version",
+        "result_order_version",
+        "observed_at"
+      ],
+      "properties": {
+        "address_change_id": {
+          "type": "string"
+        },
+        "order_id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "succeeded",
+            "failed",
+            "unknown"
+          ]
+        },
+        "expected_order_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "result_order_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_update_shipping_address": {
+      "type": "object",
+      "required": [
+        "operation_id",
+        "address_change_id",
+        "status",
+        "result_order_version",
+        "error_code",
+        "observed_at"
+      ],
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "address_change_id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "succeeded",
+            "failed",
+            "unknown"
+          ]
+        },
+        "result_order_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_update_ticket": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "status",
+        "priority",
+        "revision",
+        "message_id"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "in_progress",
+            "resolved",
+            "closed"
+          ]
+        },
+        "priority": {
+          "enum": [
+            "low",
+            "normal",
+            "high",
+            "urgent"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "message_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_query_return_progress": {
+      "type": "object",
+      "required": [
+        "return_id",
+        "status",
+        "revision",
+        "lines",
+        "source_version",
+        "observed_at"
+      ],
+      "properties": {
+        "return_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "return_line_id",
+              "authorized_qty",
+              "received_qty",
+              "accepted_qty",
+              "rejected_qty",
+              "reason_codes"
+            ],
+            "properties": {
+              "return_line_id": {
+                "type": "string"
+              },
+              "authorized_qty": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "received_qty": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "accepted_qty": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "rejected_qty": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "reason_codes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_data_query_refund_execution": {
+      "type": "object",
+      "required": [
+        "refund_request_id",
+        "funds_status",
+        "executions",
+        "observed_at"
+      ],
+      "properties": {
+        "refund_request_id": {
+          "type": "string"
+        },
+        "funds_status": {
+          "enum": [
+            "not_executed",
+            "queued",
+            "submitting",
+            "processing",
+            "unknown",
+            "succeeded",
+            "failed"
+          ]
+        },
+        "executions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "execution_id",
+              "status",
+              "amount_minor",
+              "currency",
+              "channel_transaction_ref",
+              "source_version",
+              "evidence_refs"
+            ],
+            "properties": {
+              "execution_id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "amount_minor": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "channel_transaction_ref": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_version": {
+                "type": "string"
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

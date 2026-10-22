@@ -1,0 +1,1308 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:after-sales-agent:event-envelope:v1",
+  "title": "Versioned integration event envelope",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "event_id",
+    "event_type",
+    "event_version",
+    "tenant_id",
+    "request_id",
+    "correlation_id",
+    "trace_id",
+    "operation_id",
+    "causation_id",
+    "parent_event_id",
+    "producer",
+    "occurred_at",
+    "idempotency_key",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.]{2,127}$",
+      "enum": [
+        "ticket.created",
+        "order.shipping_address.updated",
+        "ticket.updated",
+        "human.handoff.created",
+        "notification.created",
+        "refund.confirmed",
+        "knowledge.updated",
+        "agent.task.created",
+        "tool.call.failed",
+        "audit.record.created",
+        "return.created",
+        "warehouse.return.received",
+        "warehouse.return.inspected",
+        "refund.approved",
+        "refund.execution.requested",
+        "refund.execution.succeeded",
+        "refund.execution.failed",
+        "ontology.release.activated"
+      ]
+    },
+    "event_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operation_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "causation_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "parent_event_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "retry_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "ticket.created"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_ticket_created"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "order.shipping_address.updated"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_order_shipping_address_updated"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "ticket.updated"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_ticket_updated"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "human.handoff.created"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_human_handoff_created"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "notification.created"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_notification_created"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "refund.confirmed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_refund_confirmed"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "knowledge.updated"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_knowledge_updated"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "agent.task.created"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_agent_task_created"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "tool.call.failed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_tool_call_failed"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "audit.record.created"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_audit_record_created"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "return.created"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_return_created"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "warehouse.return.received"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_warehouse_return_received"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "warehouse.return.inspected"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_warehouse_return_inspected"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "refund.approved"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_refund_approved"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "refund.execution.requested"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_refund_execution_requested"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "refund.execution.succeeded"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_refund_execution_succeeded"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "refund.execution.failed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_refund_execution_failed"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "ontology.release.activated"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/payload_ontology_release_activated"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "payload_ticket_created": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "revision",
+        "status",
+        "priority",
+        "context_ref",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_order_shipping_address_updated": {
+      "type": "object",
+      "required": [
+        "order_id",
+        "address_change_id",
+        "result_order_version",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "address_change_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result_order_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_ticket_updated": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "revision",
+        "status",
+        "priority",
+        "context_ref",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_human_handoff_created": {
+      "type": "object",
+      "required": [
+        "handoff_id",
+        "ticket_id",
+        "status",
+        "summary_ref",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "handoff_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ticket_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_notification_created": {
+      "type": "object",
+      "required": [
+        "notification_id",
+        "channel",
+        "template_id",
+        "resource_refs",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "notification_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "channel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resource_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_refund_confirmed": {
+      "type": "object",
+      "required": [
+        "refund_request_id",
+        "order_id",
+        "amount_minor",
+        "currency",
+        "revision",
+        "requires_manual_review",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "refund_request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "order_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requires_manual_review": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_knowledge_updated": {
+      "type": "object",
+      "required": [
+        "knowledge_release_id",
+        "document_id",
+        "version",
+        "change_type",
+        "manifest_digest",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "knowledge_release_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "change_type": {
+          "type": "string",
+          "enum": ["upsert", "delete"]
+        },
+        "manifest_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_agent_task_created": {
+      "type": "object",
+      "required": [
+        "task_id",
+        "task_type",
+        "checkpoint_ref",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "task_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checkpoint_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_tool_call_failed": {
+      "type": "object",
+      "required": [
+        "invocation_id",
+        "tool_name",
+        "args_digest",
+        "attempt_count",
+        "retry_count",
+        "retry_allowed",
+        "error_code",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tool_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "args_digest": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attempt_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retry_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retry_allowed": {
+          "type": "string",
+          "minLength": 1
+        },
+        "error_code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_audit_record_created": {
+      "type": "object",
+      "required": [
+        "audit_id",
+        "action",
+        "resource_refs",
+        "status",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "audit_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resource_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_return_created": {
+      "type": "object",
+      "required": [
+        "return_id",
+        "refund_request_id",
+        "order_id",
+        "request_line_refs",
+        "revision",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "return_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "refund_request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "order_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "request_line_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_warehouse_return_received": {
+      "type": "object",
+      "required": [
+        "return_id",
+        "receipt_id",
+        "receipt_line_refs",
+        "received_qty",
+        "source_version",
+        "evidence_refs",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "return_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "receipt_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "receipt_line_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "received_qty": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_warehouse_return_inspected": {
+      "type": "object",
+      "required": [
+        "return_id",
+        "inspection_id",
+        "receipt_line_refs",
+        "accepted_qty",
+        "rejected_qty",
+        "reason_codes",
+        "source_version",
+        "evidence_refs",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "return_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inspection_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "receipt_line_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "accepted_qty": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rejected_qty": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "source_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_refund_approved": {
+      "type": "object",
+      "required": [
+        "refund_request_id",
+        "revision",
+        "approved_amount_minor",
+        "currency",
+        "return_status",
+        "review_subject_id",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "refund_request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "approved_amount_minor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "minLength": 1
+        },
+        "return_status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "review_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_refund_execution_requested": {
+      "type": "object",
+      "required": [
+        "execution_id",
+        "refund_request_id",
+        "original_payment_id",
+        "allocation_refs",
+        "amount_minor",
+        "currency",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "execution_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "refund_request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "original_payment_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "allocation_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "minLength": 1
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_refund_execution_succeeded": {
+      "type": "object",
+      "required": [
+        "execution_id",
+        "refund_request_id",
+        "channel_transaction_ref",
+        "amount_minor",
+        "currency",
+        "confirmed_at",
+        "source_version",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "execution_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "refund_request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "channel_transaction_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_refund_execution_failed": {
+      "type": "object",
+      "required": [
+        "execution_id",
+        "refund_request_id",
+        "failure_code",
+        "retry_decision_ref",
+        "source_version",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "execution_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "refund_request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "failure_code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retry_decision_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_ontology_release_activated": {
+      "type": "object",
+      "required": [
+        "release_id",
+        "manifest_digest",
+        "mapping_version",
+        "metric_version",
+        "activated_at",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "properties": {
+        "release_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifest_digest": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mapping_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "metric_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "activated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "actor_subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

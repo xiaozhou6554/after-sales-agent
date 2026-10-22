@@ -1,0 +1,2612 @@
+openapi: 3.1.0
+info:
+  title: After-sales Agent Gateway
+  version: 1.0.0
+  description: HTTP contract for the complete first release. AuthContext is derived from the authenticated server session
+    and is never accepted in request bodies.
+servers:
+- url: https://{tenant-host}/api/v1
+  variables:
+    tenant-host:
+      default: localhost
+security:
+- bearerAuth: []
+paths:
+  /chat:
+    post:
+      operationId: submitChat
+      parameters:
+      - $ref: '#/components/parameters/OptionalIdempotencyKey'
+      - $ref: '#/components/parameters/PreferAsync'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Synchronous APIResponse or an already completed idempotent task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitChatResult'
+        '202':
+          description: Persisted task accepted when Prefer is respond-async; Idempotency-Key is required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTaskResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /tasks/{task_id}:
+    get:
+      operationId: getTask
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+      responses:
+        '200':
+          description: Authorized APIResponse with data.task; pending tasks have no fabricated result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTaskResponse'
+        '404':
+          $ref: '#/components/responses/SafeNotFound'
+  /tickets:
+    post:
+      operationId: createTicket
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTicketRequest'
+      responses:
+        '201':
+          description: Created after validating the persisted user confirmation; returns the real ticket state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTicketResult'
+        '409':
+          description: Confirmation
+          revision: null
+          or idempotency conflict: null
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /tickets/{ticket_id}:
+    get:
+      operationId: getTicket
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+      responses:
+        '200':
+          description: Authorized ticket view
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTicketResult'
+        '404':
+          $ref: '#/components/responses/SafeNotFound'
+  /tickets/{ticket_id}/messages:
+    post:
+      operationId: addTicketMessage
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketMessageRequest'
+      responses:
+        '200':
+          description: Message added through the authorized ticket use case
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddTicketMessageResult'
+        '409':
+          description: Confirmation or expected revision conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /ticket-confirmations:
+    post:
+      operationId: createTicketConfirmation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketConfirmationRequest'
+      responses:
+        '201':
+          description: Persisted confirmation bound to normalized content
+          subject: null
+          customer: null
+          target: null
+          and revision: null
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTicketConfirmationResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /handoffs:
+    post:
+      operationId: createHandoff
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandoffRequest'
+      responses:
+        '202':
+          description: Handoff status based on the persisted operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateHandoffResult'
+        '409':
+          description: Idempotency or resource-state conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /health/live:
+    get:
+      operationId: healthLive
+      security: []
+      responses:
+        '200':
+          description: Process liveness
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthLiveResult'
+  /health/ready:
+    get:
+      operationId: healthReady
+      security: []
+      responses:
+        '200':
+          description: Dependency readiness
+          including explicit degraded state: null
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthReadyResult'
+        '503':
+          description: Not ready or degraded
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /auth/mock/session:
+    post:
+      operationId: createMockSession
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockSessionRequest'
+      responses:
+        '200':
+          description: Session for a predefined development/test account; disabled in production
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMockSessionResult'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /me:
+    get:
+      operationId: getCurrentIdentity
+      responses:
+        '200':
+          description: Authenticated subject
+          roles: null
+          scopes: null
+          and authorized-scope summary: null
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCurrentIdentityResult'
+  /workbench/customers:
+    get:
+      operationId: listAuthorizedCustomers
+      parameters:
+      - name: query
+        in: query
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Paginated customers within the authenticated employee's authorized scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAuthorizedCustomersResult'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/tickets:
+    get:
+      operationId: listAuthorizedTickets
+      parameters:
+      - name: customer_id
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: priority
+        in: query
+        schema:
+          type: string
+      - name: assigned_to
+        in: query
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Paginated authorized ticket summaries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAuthorizedTicketsResult'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/tickets/{ticket_id}:
+    get:
+      operationId: getAuthorizedTicketDetail
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Ticket detail available to the authenticated employee, including internal notes
+        '404':
+          $ref: '#/components/responses/SafeNotFound'
+  /workbench/tickets/{ticket_id}/assignment/confirmations:
+    post:
+      operationId: prepareTicketAssignmentConfirmation
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkbenchAssignmentConfirmationRequest'
+      responses:
+        '201':
+          description: Content-bound staff confirmation challenge
+  /workbench/tickets/{ticket_id}/status/confirmations:
+    post:
+      operationId: prepareTicketStatusConfirmation
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkbenchStatusConfirmationRequest'
+      responses:
+        '201':
+          description: Content-bound staff confirmation challenge
+  /workbench/ticket-confirmations/{confirmation_id}/verify:
+    post:
+      operationId: verifyWorkbenchTicketConfirmation
+      parameters:
+      - name: confirmation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkbenchConfirmationVerifyRequest'
+      responses:
+        '200':
+          description: Confirmation verified for the issuing employee and bound operation
+  /workbench/tickets/{ticket_id}/assignment:
+    post:
+      operationId: assignTicket
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignTicketRequest'
+      responses:
+        '200':
+          description: Latest ticket assignment and revision
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignTicketResult'
+        '409':
+          description: Revision or team-scope conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/tickets/{ticket_id}/status:
+    post:
+      operationId: changeTicketStatus
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeTicketStatusRequest'
+      responses:
+        '200':
+          description: Latest allowed ticket status and revision
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeTicketStatusResult'
+        '409':
+          description: Invalid transition or revision conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/handoffs:
+    get:
+      operationId: listAuthorizedHandoffs
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Paginated authorized handoff summaries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAuthorizedHandoffsResult'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/handoffs/{handoff_id}/accept:
+    post:
+      operationId: acceptHandoff
+      parameters:
+      - name: handoff_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpectedRevisionRequest'
+      responses:
+        '200':
+          description: Accepted handoff with assigned employee and ticket reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptHandoffResult'
+        '409':
+          description: Already accepted or revision conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/refund-requests:
+    get:
+      operationId: listReviewableRefunds
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: customer_id
+        in: query
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Paginated refund requests authorized for review
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListReviewableRefundsResult'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/refund-requests/{refund_request_id}/review:
+    post:
+      operationId: reviewRefund
+      parameters:
+      - name: refund_request_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundReviewRequest'
+      responses:
+        '200':
+          description: Review status and independent funds_status; approval does not prove payment success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewRefundResult'
+        '409':
+          description: Revision or idempotency conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/audit:
+    get:
+      operationId: queryMaskedAudit
+      parameters:
+      - name: trace_id
+        in: query
+        schema:
+          type: string
+      - name: resource_ref
+        in: query
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Paginated masked audit records within the caller's authorized scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryMaskedAuditResult'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/after-sales-metrics:
+    get:
+      operationId: queryWorkbenchAfterSalesMetrics
+      description: return_application_item_rate is a separately registered metric but returns blocked and is excluded from
+        rankings until its business and finance definition is approved. return_passed_item_rate is the proposed supervisor
+        default and is also not production-enabled before approval.
+      parameters:
+      - name: metric_ids
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum:
+            - return_application_item_rate
+            - return_passed_item_rate
+            - refund_successful_line_rate
+            - refund_goods_amount_rate
+      - name: cohort_start
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: cohort_end
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: dimensions
+        in: query
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - product_id
+            - sku_id
+            - channel
+            - region
+            - warehouse
+            - reason_code
+      - name: filters
+        in: query
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          properties:
+            product_id:
+              type: string
+            sku_id:
+              type: string
+            channel:
+              type: string
+            region:
+              type: string
+            warehouse:
+              type: string
+            reason_code:
+              type: string
+          additionalProperties: false
+      - name: min_sample_size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Authorized metric results. Pending definitions or incomplete data are blocked/excluded from ranking.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricResults'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/returns/{return_id}/receipts:
+    post:
+      operationId: recordReturnReceipt
+      description: Warehouse employee operation; the model has no write tool for receiving.
+      parameters:
+      - name: return_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceiptRequest'
+      responses:
+        '201':
+          description: Receipt recorded in the authorized warehouse adapter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordReturnReceiptResult'
+        '409':
+          description: Revision
+          quantity: null
+          confirmation: null
+          or idempotency conflict: null
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/returns/{return_id}/inspections:
+    post:
+      operationId: recordReturnInspection
+      description: Warehouse employee operation; accepted quantity is bounded by received and authorized quantity plus configured
+        tolerance.
+      parameters:
+      - name: return_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InspectionRequest'
+      responses:
+        '201':
+          description: Inspection recorded; stock disposition is a separate authorized command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordReturnInspectionResult'
+        '409':
+          description: Revision or quantity conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /workbench/refund-executions/{execution_id}:
+    get:
+      operationId: queryRefundExecution
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Authoritative execution state; unknown remains unknown until queried
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryRefundExecutionResult'
+        '404':
+          $ref: '#/components/responses/SafeNotFound'
+  /workbench/refund-executions/{execution_id}/execute:
+    post:
+      operationId: executeRefund
+      description: Service-to-service operation. Not exposed to the model or browser. Requires an approved request, bound
+        customer confirmation, required warehouse acceptance, fresh authorization and original payment reference.
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202':
+          description: Submitted or accepted for processing; not proof of refund success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecuteRefundResult'
+        '409':
+          description: Stale approval
+          amount: null
+          revision or idempotency conflict: null
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /investigations/{investigation_id}:
+    get:
+      operationId: getInvestigation
+      parameters:
+      - name: investigation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Authorized immutable investigation snapshot and findings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInvestigationResult'
+        '404':
+          $ref: '#/components/responses/SafeNotFound'
+  /investigations/{investigation_id}/revisions:
+    post:
+      operationId: reviseInvestigation
+      parameters:
+      - name: investigation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestigationRevisionRequest'
+      responses:
+        '202':
+          description: New immutable investigation revision accepted; earlier revisions remain available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviseInvestigationResult'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /refund-requests/{refund_request_id}:
+    get:
+      operationId: getRefundRequest
+      parameters:
+      - name: refund_request_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Authorized masked request status; does not imply successful funds transfer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRefundRequestResult'
+        '404':
+          $ref: '#/components/responses/SafeNotFound'
+  /orders/{order_id}/address-changes:
+    post:
+      operationId: createAddressChange
+      parameters:
+      - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressChangeRequest'
+      responses:
+        '201':
+          description: Prepared address change with order version and masked confirmation summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAddressChangeResult'
+        '409':
+          description: Order state or delivery-scope conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /orders/{order_id}/address-changes/{address_change_id}/confirm:
+    post:
+      operationId: confirmAddressChange
+      parameters:
+      - $ref: '#/components/parameters/OrderId'
+      - name: address_change_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OneTimeVerificationRequest'
+      responses:
+        '201':
+          description: Server-issued confirmation bound to identity
+          order: null
+          operation: null
+          address digest: null
+          and order revision: null
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfirmAddressChangeResult'
+        '409':
+          description: Expired
+          stale: null
+          or mismatched confirmation: null
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /orders/{order_id}/address-changes/{address_change_id}:
+    get:
+      operationId: getAddressChange
+      parameters:
+      - $ref: '#/components/parameters/OrderId'
+      - name: address_change_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Authorized actual operation state and masked result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAddressChangeResult'
+        '404':
+          $ref: '#/components/responses/SafeNotFound'
+  /orders/{order_id}/refund-quotes/{quote_id}/confirm:
+    post:
+      operationId: confirmRefundQuote
+      parameters:
+      - $ref: '#/components/parameters/OrderId'
+      - name: quote_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OneTimeVerificationRequest'
+      responses:
+        '201':
+          description: Confirmation bound to quote
+          amount: null
+          currency: null
+          policy: null
+          order: null
+          payment: null
+          tenant: null
+          and subjects: null
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfirmRefundQuoteResult'
+        '409':
+          description: Quote expired or underlying version changed
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /orders/{order_id}:
+    get:
+      operationId: queryOrder
+      parameters:
+      - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Authorized order snapshot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderSnapshot'
+        '404':
+          $ref: '#/components/responses/SafeNotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /after-sales/metrics:
+    get:
+      operationId: queryAfterSalesMetrics
+      description: Return the requested metric with approval and quality state. The return application metric is blocked until
+        its numerator, denominator, and cohort time are approved by business and finance.
+      parameters:
+      - name: metric_id
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - return_application_item_rate
+          - return_passed_item_rate
+          - refund_successful_line_rate
+          - refund_goods_amount_rate
+      - name: cohort_start
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: cohort_end
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: dimensions
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - product_id
+            - sku_id
+            - channel
+            - region
+            - warehouse
+            - reason_code
+      responses:
+        '200':
+          description: Metric result with numerator, denominator, quality, coverage, watermarks, versions and evidence references
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricResult'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /investigations:
+    post:
+      operationId: createInvestigation
+      description: Creates an immutable investigation snapshot. It does not modify source business records.
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestigationRequest'
+      responses:
+        '202':
+          description: Investigation accepted; response includes investigation_id and snapshot status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateInvestigationResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    OrderId:
+      name: order_id
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 128
+    OptionalIdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Required when Prefer contains respond-async; same key and changed request return 409
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 128
+    PreferAsync:
+      name: Prefer
+      in: header
+      required: false
+      description: respond-async requests durable immediate acceptance; omission keeps synchronous chat
+      schema:
+        type: string
+        const: respond-async
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      schema:
+        type: string
+        minLength: 1
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+  responses:
+    SafeNotFound:
+      description: Same public response for absent and inaccessible resources
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Unauthorized:
+      description: Authentication is missing or invalid
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Forbidden:
+      description: Authenticated principal is not authorized for this scope
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    BadRequest:
+      description: Request violates the published schema or business preconditions
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+  schemas:
+    WorkbenchAssignmentConfirmationRequest:
+      type: object
+      required: [schema_version, assigned_to, expected_revision]
+      properties:
+        schema_version:
+          type: string
+          const: '1.0'
+        assigned_to:
+          type: string
+          minLength: 1
+          maxLength: 64
+        expected_revision:
+          type: integer
+          minimum: 1
+      additionalProperties: false
+    WorkbenchStatusConfirmationRequest:
+      type: object
+      required: [schema_version, target_status, reason, expected_revision]
+      properties:
+        schema_version:
+          type: string
+          const: '1.0'
+        target_status:
+          type: string
+          enum: [open, in_progress, resolved, closed]
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        expected_revision:
+          type: integer
+          minimum: 1
+      additionalProperties: false
+    WorkbenchConfirmationVerifyRequest:
+      type: object
+      required: [schema_version, challenge]
+      properties:
+        schema_version:
+          type: string
+          const: '1.0'
+        challenge:
+          type: string
+          minLength: 1
+          maxLength: 128
+      additionalProperties: false
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      - request_id
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+          const: Resource unavailable
+        status:
+          type: integer
+          const: 404
+        request_id:
+          type: string
+      additionalProperties: false
+    Money:
+      type: object
+      required:
+      - amount_minor
+      - currency
+      properties:
+        amount_minor:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          pattern: ^[A-Z]{3}$
+      additionalProperties: false
+    OrderSnapshot:
+      type: object
+      required:
+      - order_id
+      - status
+      - total
+      - version
+      properties:
+        order_id:
+          type: string
+        status:
+          type: string
+        total:
+          $ref: '#/components/schemas/Money'
+        version:
+          type: integer
+          minimum: 1
+      additionalProperties: true
+    MetricResult:
+      type: object
+      required:
+      - metric_id
+      - numerator
+      - denominator
+      - value
+      - rank
+      - ranking_eligible
+      - quality
+      - quality_issues
+      - excluded_reasons
+      - default_ranking_candidate
+      - definition_status
+      - coverage
+      - sample_size
+      - as_of
+      - watermarks
+      - versions
+      - evidence_refs
+      properties:
+        metric_id:
+          type: string
+          enum:
+          - return_application_item_rate
+          - return_passed_item_rate
+          - refund_successful_line_rate
+          - refund_goods_amount_rate
+        numerator:
+          type: integer
+          minimum: 0
+        denominator:
+          type: integer
+          minimum: 0
+        value:
+          type:
+          - number
+          - 'null'
+        rank:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        ranking_eligible:
+          type: boolean
+        quality:
+          type: string
+          enum:
+          - complete
+          - provisional
+          - incomplete
+          - blocked
+        quality_issues:
+          type: array
+          items:
+            type: string
+        excluded_reasons:
+          type: array
+          items:
+            type: string
+        default_ranking_candidate:
+          type: boolean
+        definition_status:
+          type: string
+          enum:
+          - pending_business_finance_approval
+          - approved
+        coverage:
+          type: number
+          minimum: 0
+          maximum: 1
+        sample_size:
+          type: integer
+          minimum: 0
+        as_of:
+          type: string
+          format: date-time
+        watermarks:
+          type: object
+          additionalProperties:
+            type: string
+            format: date-time
+        versions:
+          type: object
+          required:
+          - metric_version
+          - ontology_version
+          - mapping_version
+          - projection_snapshot_id
+          properties:
+            metric_version:
+              type: string
+            ontology_version:
+              type: string
+            mapping_version:
+              type: string
+            projection_snapshot_id:
+              type: string
+          additionalProperties: false
+        evidence_refs:
+          type: array
+          items:
+            type: string
+      additionalProperties: false
+    MetricResults:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricResult'
+      additionalProperties: false
+    InvestigationRequest:
+      type: object
+      required:
+      - anomaly_type
+      - window_start
+      - window_end
+      - filters
+      properties:
+        anomaly_type:
+          type: string
+          enum:
+          - business_metric
+          - cross_system_conflict
+          - runtime_failure
+        window_start:
+          type: string
+          format: date-time
+        window_end:
+          type: string
+          format: date-time
+        metric_id:
+          type: string
+        filters:
+          type: object
+          properties:
+            product_id:
+              type: string
+            sku_id:
+              type: string
+            source_system:
+              type: string
+            correlation_id:
+              type: string
+            trace_id:
+              type: string
+            operation_id:
+              type: string
+            reason_code:
+              type: string
+          additionalProperties: false
+      additionalProperties: false
+    InvestigationRevisionRequest:
+      type: object
+      required:
+      - window_start
+      - window_end
+      - filters
+      properties:
+        window_start:
+          type: string
+          format: date-time
+        window_end:
+          type: string
+          format: date-time
+        filters:
+          type: object
+          properties:
+            product_id:
+              type: string
+            sku_id:
+              type: string
+            source_system:
+              type: string
+            correlation_id:
+              type: string
+            trace_id:
+              type: string
+            operation_id:
+              type: string
+            reason_code:
+              type: string
+          additionalProperties: false
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      additionalProperties: false
+    ChatRequest:
+      type: object
+      required:
+      - schema_version
+      - message
+      - thread_id
+      - customer_id
+      - business_refs
+      properties:
+        schema_version:
+          type: string
+          const: '1.0'
+        message:
+          type: string
+          minLength: 1
+          maxLength: 20000
+        thread_id:
+          type:
+          - string
+          - 'null'
+        customer_id:
+          type:
+          - string
+          - 'null'
+        business_refs:
+          type: array
+          items:
+            type: object
+            required:
+            - type
+            - id
+            properties:
+              type:
+                type: string
+                enum:
+                - order
+                - ticket
+                - return
+                - refund_request
+              id:
+                type: string
+                minLength: 1
+            additionalProperties: false
+      additionalProperties: false
+    MockSessionRequest:
+      type: object
+      required:
+      - account_id
+      properties:
+        account_id:
+          type: string
+          minLength: 1
+      additionalProperties: false
+    TicketConfirmationRequest:
+      type: object
+      required:
+      - operation_type
+      - content
+      properties:
+        operation_type:
+          type: string
+          enum:
+          - create
+          - update
+          - assign
+          - status
+        target_id:
+          type:
+          - string
+          - 'null'
+        content:
+          type: object
+          properties:
+            title:
+              type: string
+              maxLength: 200
+            description:
+              type: string
+              maxLength: 10000
+            priority:
+              type: string
+              enum:
+              - low
+              - normal
+              - high
+              - urgent
+            assigned_to:
+              type: string
+            target_status:
+              type: string
+            reason:
+              type: string
+              maxLength: 1000
+          minProperties: 1
+          additionalProperties: false
+        expected_revision:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+      additionalProperties: false
+    CreateTicketRequest:
+      type: object
+      required:
+      - title
+      - description
+      - priority
+      - confirmation_id
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+          maxLength: 10000
+        priority:
+          type: string
+          enum:
+          - low
+          - normal
+          - high
+          - urgent
+        confirmation_id:
+          type: string
+          minLength: 1
+      additionalProperties: false
+    TicketMessageRequest:
+      type: object
+      required:
+      - content
+      - confirmation_id
+      - expected_revision
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 10000
+        confirmation_id:
+          type: string
+          minLength: 1
+        expected_revision:
+          type: integer
+          minimum: 1
+      additionalProperties: false
+    HandoffRequest:
+      type: object
+      required:
+      - reason_code
+      - thread_id
+      properties:
+        reason_code:
+          type: string
+          minLength: 1
+        thread_id:
+          type: string
+          minLength: 1
+        summary_candidate:
+          type: string
+          maxLength: 4000
+      additionalProperties: false
+    AssignTicketRequest:
+      type: object
+      required:
+      - assigned_to
+      - expected_revision
+      - confirmation_id
+      properties:
+        assigned_to:
+          type: string
+          minLength: 1
+        expected_revision:
+          type: integer
+          minimum: 1
+        confirmation_id:
+          type: string
+          minLength: 1
+      additionalProperties: false
+    ChangeTicketStatusRequest:
+      type: object
+      required:
+      - target_status
+      - reason
+      - expected_revision
+      - confirmation_id
+      properties:
+        target_status:
+          type: string
+          minLength: 1
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        expected_revision:
+          type: integer
+          minimum: 1
+        confirmation_id:
+          type: string
+          minLength: 1
+      additionalProperties: false
+    ExpectedRevisionRequest:
+      type: object
+      required:
+      - expected_revision
+      properties:
+        expected_revision:
+          type: integer
+          minimum: 1
+      additionalProperties: false
+    RefundReviewRequest:
+      type: object
+      required:
+      - decision
+      - review_reason
+      - expected_revision
+      properties:
+        decision:
+          type: string
+          enum:
+          - approved
+          - rejected
+        review_reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        expected_revision:
+          type: integer
+          minimum: 1
+      additionalProperties: false
+    AddressChangeRequest:
+      type: object
+      required:
+      - recipient_name
+      - contact_phone
+      - province
+      - city
+      - district
+      - address_line
+      properties:
+        recipient_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        contact_phone:
+          type: string
+          minLength: 3
+          maxLength: 40
+        province:
+          type: string
+          minLength: 1
+          maxLength: 100
+        city:
+          type: string
+          minLength: 1
+          maxLength: 100
+        district:
+          type: string
+          minLength: 1
+          maxLength: 100
+        address_line:
+          type: string
+          minLength: 1
+          maxLength: 500
+        confirmation_id:
+          type: string
+      additionalProperties: false
+    OneTimeVerificationRequest:
+      type: object
+      required:
+      - challenge_id
+      - verification_code
+      properties:
+        challenge_id:
+          type: string
+          minLength: 1
+        verification_code:
+          type: string
+          minLength: 1
+          maxLength: 32
+      additionalProperties: false
+    ReceiptRequest:
+      type: object
+      required:
+      - line_id
+      - quantity
+      - expected_revision
+      - confirmation_id
+      properties:
+        line_id:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        expected_revision:
+          type: integer
+          minimum: 1
+        confirmation_id:
+          type: string
+        source_reference:
+          type: string
+      additionalProperties: false
+    InspectionRequest:
+      type: object
+      required:
+      - receipt_line_id
+      - accepted_quantity
+      - rejected_quantity
+      - disposition
+      - expected_revision
+      - confirmation_id
+      properties:
+        receipt_line_id:
+          type: string
+        accepted_quantity:
+          type: integer
+          minimum: 0
+        rejected_quantity:
+          type: integer
+          minimum: 0
+        disposition:
+          type: string
+          enum:
+          - restock
+          - quarantine
+          - scrap
+          - return_to_supplier
+          - pending_review
+        reason_code:
+          type: string
+        expected_revision:
+          type: integer
+          minimum: 1
+        confirmation_id:
+          type: string
+      additionalProperties: false
+    SubmitChatResult:
+      type: object
+      required:
+      - schema_version
+      - request_id
+      - correlation_id
+      - trace_id
+      - thread_id
+      - status
+      - answer
+      - next_action
+      - handoff_required
+      - requested_inputs
+      - sources
+      - async_task_id
+      - data
+      - error
+      properties:
+        schema_version:
+          type: string
+          const: '1.0'
+        request_id:
+          type: string
+        correlation_id:
+          type: string
+        trace_id:
+          type: string
+        thread_id:
+          type: [string, 'null']
+        status:
+          type: string
+          enum: [success, needs_input, pending, partial, error]
+        answer:
+          type: string
+        next_action:
+          type: string
+          enum: [finish, ask_user, handoff, wait]
+        handoff_required:
+          type: boolean
+        requested_inputs:
+          type: array
+        sources:
+          type: array
+        async_task_id:
+          type: [string, 'null']
+        data:
+          type: object
+        error:
+          type: [object, 'null']
+      additionalProperties: false
+    GetTaskResponse:
+      type: object
+      required:
+      - schema_version
+      - request_id
+      - correlation_id
+      - trace_id
+      - thread_id
+      - status
+      - answer
+      - next_action
+      - handoff_required
+      - requested_inputs
+      - sources
+      - async_task_id
+      - data
+      - error
+      properties:
+        schema_version:
+          type: string
+          const: '1.0'
+        request_id:
+          type: string
+        correlation_id:
+          type: string
+        trace_id:
+          type: string
+        thread_id:
+          type: string
+        status:
+          type: string
+          enum: [success, pending]
+        answer:
+          type: string
+        next_action:
+          type: string
+          enum: [finish, wait]
+        handoff_required:
+          type: boolean
+        requested_inputs:
+          type: array
+          maxItems: 0
+        sources:
+          type: array
+          maxItems: 0
+        async_task_id:
+          type:
+          - string
+          - 'null'
+        data:
+          type: object
+          required: [task]
+          properties:
+            task:
+              $ref: '#/components/schemas/TaskStatus'
+          additionalProperties: false
+        error:
+          type: 'null'
+      additionalProperties: false
+    TaskStatus:
+      type: object
+      required: [task_id, status, result_ref, error, updated_at]
+      properties:
+        task_id:
+          type: string
+        status:
+          type: string
+          enum: [pending, running, succeeded, failed]
+        result_ref:
+          type: [string, 'null']
+        error:
+          type: [string, 'null']
+        updated_at:
+          type: string
+          format: date-time
+        answer:
+          type: string
+      additionalProperties: false
+    CreateTicketResult:
+      type: object
+      required:
+      - ticket_id
+      - status
+      - revision
+      - created_at
+      properties:
+        ticket_id:
+          type:
+          - string
+          - 'null'
+        status:
+          type: string
+        revision:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+      additionalProperties: false
+    GetTicketResult:
+      type: object
+      required:
+      - ticket_id
+      - title
+      - description
+      - priority
+      - status
+      - revision
+      - assigned_to
+      - messages
+      properties:
+        ticket_id:
+          type:
+          - string
+          - 'null'
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+        status:
+          type: string
+        revision:
+          type: integer
+        assigned_to:
+          type:
+          - string
+          - 'null'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketMessageItem'
+      additionalProperties: false
+    AddTicketMessageResult:
+      type: object
+      required:
+      - ticket_id
+      - message_id
+      - revision
+      - status
+      properties:
+        ticket_id:
+          type:
+          - string
+          - 'null'
+        message_id:
+          type: string
+        revision:
+          type: integer
+        status:
+          type: string
+      additionalProperties: false
+    CreateTicketConfirmationResult:
+      type: object
+      required:
+      - confirmation_id
+      - expires_at
+      - content_digest
+      properties:
+        confirmation_id:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        content_digest:
+          type: string
+      additionalProperties: false
+    CreateHandoffResult:
+      type: object
+      required:
+      - handoff_id
+      - status
+      - revision
+      - ticket_id
+      properties:
+        handoff_id:
+          type: string
+        status:
+          type: string
+        revision:
+          type: integer
+        ticket_id:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    HealthLiveResult:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          type: string
+          const: alive
+      additionalProperties: false
+    HealthReadyResult:
+      type: object
+      required:
+      - status
+      - dependencies
+      properties:
+        status:
+          type: string
+          enum:
+          - ready
+          - degraded
+          - not_ready
+        dependencies:
+          type: object
+      additionalProperties: false
+    CreateMockSessionResult:
+      type: object
+      required:
+      - access_token
+      - token_type
+      - expires_at
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+      additionalProperties: false
+    GetCurrentIdentityResult:
+      type: object
+      required:
+      - subject_id
+      - tenant_id
+      - roles
+      - scopes
+      - data_scope
+      properties:
+        subject_id:
+          type: string
+        tenant_id:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        data_scope:
+          type: object
+      additionalProperties: false
+    ListAuthorizedCustomersResult:
+      type: object
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizedCustomerItem'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ListAuthorizedTicketsResult:
+      type: object
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizedTicketItem'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    AssignTicketResult:
+      type: object
+      required:
+      - ticket_id
+      - status
+      - assigned_to
+      - revision
+      properties:
+        ticket_id:
+          type:
+          - string
+          - 'null'
+        status:
+          type: string
+        assigned_to:
+          type:
+          - string
+          - 'null'
+        revision:
+          type: integer
+      additionalProperties: false
+    ChangeTicketStatusResult:
+      type: object
+      required:
+      - ticket_id
+      - status
+      - revision
+      properties:
+        ticket_id:
+          type:
+          - string
+          - 'null'
+        status:
+          type: string
+        revision:
+          type: integer
+      additionalProperties: false
+    ListAuthorizedHandoffsResult:
+      type: object
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizedHandoffItem'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    AcceptHandoffResult:
+      type: object
+      required:
+      - handoff_id
+      - status
+      - assigned_to
+      - ticket_id
+      - revision
+      properties:
+        handoff_id:
+          type: string
+        status:
+          type: string
+        assigned_to:
+          type:
+          - string
+          - 'null'
+        ticket_id:
+          type:
+          - string
+          - 'null'
+        revision:
+          type: integer
+      additionalProperties: false
+    ListReviewableRefundsResult:
+      type: object
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewableRefundItem'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ReviewRefundResult:
+      type: object
+      required:
+      - refund_request_id
+      - review_status
+      - funds_status
+      - revision
+      properties:
+        refund_request_id:
+          type: string
+        review_status:
+          type: string
+        funds_status:
+          type: string
+        revision:
+          type: integer
+      additionalProperties: false
+    QueryMaskedAuditResult:
+      type: object
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaskedAuditItem'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    RecordReturnReceiptResult:
+      type: object
+      required:
+      - return_id
+      - receipt_id
+      - return_status
+      - received_quantity
+      - revision
+      - source_record_id
+      - environment
+      properties:
+        return_id:
+          type: string
+        receipt_id:
+          type: string
+        return_status:
+          type: string
+        received_quantity:
+          type: integer
+        revision:
+          type: integer
+        source_record_id:
+          type: string
+        environment:
+          type: string
+      additionalProperties: false
+    RecordReturnInspectionResult:
+      type: object
+      required:
+      - return_id
+      - inspection_id
+      - return_status
+      - accepted_quantity
+      - rejected_quantity
+      - revision
+      - source_record_id
+      - environment
+      properties:
+        return_id:
+          type: string
+        inspection_id:
+          type: string
+        return_status:
+          type: string
+        accepted_quantity:
+          type: integer
+        rejected_quantity:
+          type: integer
+        revision:
+          type: integer
+        source_record_id:
+          type: string
+        environment:
+          type: string
+      additionalProperties: false
+    QueryRefundExecutionResult:
+      type: object
+      required:
+      - execution_id
+      - funds_status
+      - amount_minor
+      - currency
+      - channel_reference
+      - environment
+      - revision
+      properties:
+        execution_id:
+          type: string
+        funds_status:
+          type: string
+        amount_minor:
+          type: integer
+        currency:
+          type: string
+        channel_reference:
+          type:
+          - string
+          - 'null'
+        environment:
+          type: string
+        revision:
+          type: integer
+      additionalProperties: false
+    ExecuteRefundResult:
+      type: object
+      required:
+      - execution_id
+      - funds_status
+      - accepted
+      - environment
+      properties:
+        execution_id:
+          type: string
+        funds_status:
+          type: string
+        accepted:
+          type: boolean
+        environment:
+          type: string
+      additionalProperties: false
+    GetInvestigationResult:
+      type: object
+      required:
+      - investigation_id
+      - revision
+      - quality
+      - status
+      - snapshot_id
+      - findings
+      - evidence_refs
+      properties:
+        investigation_id:
+          type: string
+        revision:
+          type: integer
+        quality:
+          type: string
+        status:
+          type: string
+        snapshot_id:
+          type: string
+        findings:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvestigationFindingItem'
+        evidence_refs:
+          type: array
+      additionalProperties: false
+    ReviseInvestigationResult:
+      type: object
+      required:
+      - investigation_id
+      - revision
+      - status
+      - snapshot_id
+      properties:
+        investigation_id:
+          type: string
+        revision:
+          type: integer
+        status:
+          type: string
+        snapshot_id:
+          type: string
+      additionalProperties: false
+    GetRefundRequestResult:
+      type: object
+      required:
+      - refund_request_id
+      - review_status
+      - return_status
+      - funds_status
+      - amount_minor
+      - currency
+      - revision
+      properties:
+        refund_request_id:
+          type: string
+        review_status:
+          type: string
+        return_status:
+          type: string
+        funds_status:
+          type: string
+        amount_minor:
+          type: integer
+        currency:
+          type: string
+        revision:
+          type: integer
+      additionalProperties: false
+    CreateAddressChangeResult:
+      type: object
+      required:
+      - address_change_id
+      - status
+      - expected_order_version
+      - masked_confirmation_summary
+      - expires_at
+      properties:
+        address_change_id:
+          type: string
+        status:
+          type: string
+        expected_order_version:
+          type: integer
+        masked_confirmation_summary:
+          type: object
+        expires_at:
+          type: string
+          format: date-time
+      additionalProperties: false
+    ConfirmAddressChangeResult:
+      type: object
+      required:
+      - confirmation_id
+      - expires_at
+      - operation_digest
+      properties:
+        confirmation_id:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        operation_digest:
+          type: string
+      additionalProperties: false
+    GetAddressChangeResult:
+      type: object
+      required:
+      - address_change_id
+      - status
+      - order_version
+      - masked_address
+      - operation_id
+      properties:
+        address_change_id:
+          type: string
+        status:
+          type: string
+        order_version:
+          type: integer
+        masked_address:
+          type: object
+        operation_id:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ConfirmRefundQuoteResult:
+      type: object
+      required:
+      - confirmation_id
+      - expires_at
+      - quote_id
+      - amount_minor
+      - currency
+      properties:
+        confirmation_id:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        quote_id:
+          type: string
+        amount_minor:
+          type: integer
+        currency:
+          type: string
+      additionalProperties: false
+    CreateInvestigationResult:
+      type: object
+      required:
+      - investigation_id
+      - snapshot_id
+      - status
+      - quality
+      - accepted_at
+      properties:
+        investigation_id:
+          type: string
+        snapshot_id:
+          type: string
+        status:
+          type: string
+        quality:
+          type: string
+        accepted_at:
+          type: string
+          format: date-time
+      additionalProperties: false
+    ApiError:
+      type: object
+      required:
+      - code
+      - message
+      - request_id
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        request_id:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+      additionalProperties: false
+    AuthorizedCustomerItem:
+      type: object
+      required:
+      - customer_id
+      - display_name_masked
+      properties:
+        customer_id:
+          type: string
+        display_name_masked:
+          type: string
+      additionalProperties: false
+    AuthorizedTicketItem:
+      type: object
+      required:
+      - ticket_id
+      - status
+      - priority
+      - revision
+      - assigned_to
+      - updated_at
+      properties:
+        ticket_id:
+          type: string
+        status:
+          type: string
+        priority:
+          type: string
+        revision:
+          type: integer
+        assigned_to:
+          type:
+          - string
+          - 'null'
+        updated_at:
+          type: string
+      additionalProperties: false
+    AuthorizedHandoffItem:
+      type: object
+      required:
+      - handoff_id
+      - status
+      - revision
+      - customer_ref
+      - summary_masked
+      properties:
+        handoff_id:
+          type: string
+        status:
+          type: string
+        revision:
+          type: integer
+        customer_ref:
+          type: string
+        summary_masked:
+          type: string
+      additionalProperties: false
+    ReviewableRefundItem:
+      type: object
+      required:
+      - refund_request_id
+      - status
+      - amount_minor
+      - currency
+      - revision
+      - requires_manual_review
+      properties:
+        refund_request_id:
+          type: string
+        status:
+          type: string
+        amount_minor:
+          type: integer
+        currency:
+          type: string
+        revision:
+          type: integer
+        requires_manual_review:
+          type: boolean
+      additionalProperties: false
+    MaskedAuditItem:
+      type: object
+      required:
+      - event_time
+      - actor_id
+      - action
+      - resource_type
+      - resource_id_hash
+      - request_id
+      - trace_id
+      - outcome
+      properties:
+        event_time:
+          type: string
+        actor_id:
+          type: string
+        action:
+          type: string
+        resource_type:
+          type: string
+        resource_id_hash:
+          type: string
+        request_id:
+          type: string
+        trace_id:
+          type: string
+        outcome:
+          type: string
+      additionalProperties: false
+    InvestigationFindingItem:
+      type: object
+      required:
+      - factor_id
+      - dimension
+      - numerator
+      - denominator
+      - contribution
+      - evidence_refs
+      properties:
+        factor_id:
+          type: string
+        dimension:
+          type: string
+        numerator:
+          type: integer
+        denominator:
+          type: integer
+        contribution:
+          type: number
+        evidence_refs:
+          type: array
+          items:
+            type: string
+      additionalProperties: false
+    TicketMessageItem:
+      type: object
+      required:
+      - message_id
+      - content
+      - visibility
+      - created_at
+      properties:
+        message_id:
+          type: string
+          minLength: 1
+        content:
+          type: string
+        visibility:
+          type: string
+          enum:
+          - customer
+          - internal
+        created_at:
+          type: string
+          format: date-time
+      additionalProperties: false

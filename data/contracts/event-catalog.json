@@ -1,0 +1,307 @@
+{
+  "schema_version": "1.0",
+  "exchange": "after_sales.events",
+  "dead_letter_queue": "after_sales.dlq",
+  "max_retries": 3,
+  "payload_schema_policy": "Each event has a payload_schema_ref into events.schema.json; the selected schema validates required fields, nullability, array and scalar types for that event_type.",
+  "events": [
+    {
+      "event_type": "ticket.created",
+      "queue": "after_sales.ticket",
+      "producer": "ticket-service",
+      "consumer": "ticket-consumer",
+      "payload_required": [
+        "ticket_id",
+        "revision",
+        "status",
+        "priority",
+        "context_ref",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_ticket_created"
+    },
+    {
+      "event_type": "order.shipping_address.updated",
+      "queue": "after_sales.order_address",
+      "producer": "order-service",
+      "consumer": "address-followup-consumer",
+      "payload_required": [
+        "order_id",
+        "address_change_id",
+        "result_order_version",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_order_shipping_address_updated"
+    },
+    {
+      "event_type": "ticket.updated",
+      "queue": "after_sales.ticket",
+      "producer": "ticket-service",
+      "consumer": "ticket-consumer",
+      "payload_required": [
+        "ticket_id",
+        "revision",
+        "status",
+        "priority",
+        "context_ref",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_ticket_updated"
+    },
+    {
+      "event_type": "human.handoff.created",
+      "queue": "after_sales.handoff",
+      "producer": "handoff-service",
+      "consumer": "handoff-consumer",
+      "payload_required": [
+        "handoff_id",
+        "ticket_id",
+        "status",
+        "summary_ref",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_human_handoff_created"
+    },
+    {
+      "event_type": "notification.created",
+      "queue": "after_sales.notification",
+      "producer": "notification-service",
+      "consumer": "notification-consumer",
+      "payload_required": [
+        "notification_id",
+        "channel",
+        "template_id",
+        "resource_refs",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_notification_created"
+    },
+    {
+      "event_type": "refund.confirmed",
+      "queue": "after_sales.refund_review",
+      "producer": "after-sales-service",
+      "consumer": "refund-review-consumer",
+      "payload_required": [
+        "refund_request_id",
+        "order_id",
+        "amount_minor",
+        "currency",
+        "revision",
+        "requires_manual_review",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_refund_confirmed"
+    },
+    {
+      "event_type": "knowledge.updated",
+      "queue": "after_sales.knowledge_update",
+      "producer": "knowledge-publisher",
+      "consumer": "knowledge-index-consumer",
+      "payload_required": [
+        "knowledge_release_id",
+        "document_id",
+        "version",
+        "change_type",
+        "manifest_digest",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_knowledge_updated"
+    },
+    {
+      "event_type": "agent.task.created",
+      "queue": "after_sales.task",
+      "producer": "agent-service",
+      "consumer": "task-consumer",
+      "payload_required": [
+        "task_id",
+        "task_type",
+        "checkpoint_ref",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_agent_task_created"
+    },
+    {
+      "event_type": "tool.call.failed",
+      "queue": "after_sales.retry",
+      "producer": "tool-coordinator",
+      "consumer": "retry-policy-consumer",
+      "payload_required": [
+        "invocation_id",
+        "tool_name",
+        "args_digest",
+        "attempt_count",
+        "retry_count",
+        "retry_allowed",
+        "error_code",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_tool_call_failed"
+    },
+    {
+      "event_type": "audit.record.created",
+      "queue": "after_sales.audit",
+      "producer": "audit-service",
+      "consumer": "audit-archive-consumer",
+      "payload_required": [
+        "audit_id",
+        "action",
+        "resource_refs",
+        "status",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_audit_record_created"
+    },
+    {
+      "event_type": "return.created",
+      "queue": "after_sales.warehouse_return",
+      "producer": "after-sales-service",
+      "consumer": "wms-return-authorizer",
+      "payload_required": [
+        "return_id",
+        "refund_request_id",
+        "order_id",
+        "request_line_refs",
+        "revision",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_return_created"
+    },
+    {
+      "event_type": "warehouse.return.received",
+      "queue": "after_sales.analytics_projection",
+      "producer": "wms-adapter",
+      "consumer": "analytics-projector",
+      "payload_required": [
+        "return_id",
+        "receipt_id",
+        "receipt_line_refs",
+        "received_qty",
+        "source_version",
+        "evidence_refs",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_warehouse_return_received"
+    },
+    {
+      "event_type": "warehouse.return.inspected",
+      "queue": "after_sales.analytics_projection",
+      "producer": "wms-adapter",
+      "consumer": "analytics-projector",
+      "payload_required": [
+        "return_id",
+        "inspection_id",
+        "receipt_line_refs",
+        "accepted_qty",
+        "rejected_qty",
+        "reason_codes",
+        "source_version",
+        "evidence_refs",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_warehouse_return_inspected"
+    },
+    {
+      "event_type": "refund.approved",
+      "queue": "after_sales.refund_execute",
+      "producer": "refund-review-use-case",
+      "consumer": "refund-coordinator",
+      "payload_required": [
+        "refund_request_id",
+        "revision",
+        "approved_amount_minor",
+        "currency",
+        "return_status",
+        "review_subject_id",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_refund_approved"
+    },
+    {
+      "event_type": "refund.execution.requested",
+      "queue": "after_sales.refund_execute",
+      "producer": "refund-coordinator",
+      "consumer": "payment-adapter",
+      "payload_required": [
+        "execution_id",
+        "refund_request_id",
+        "original_payment_id",
+        "allocation_refs",
+        "amount_minor",
+        "currency",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_refund_execution_requested"
+    },
+    {
+      "event_type": "refund.execution.succeeded",
+      "queue": "after_sales.refund_reconcile",
+      "producer": "payment-adapter",
+      "consumer": "ledger-and-reconciliation",
+      "payload_required": [
+        "execution_id",
+        "refund_request_id",
+        "channel_transaction_ref",
+        "amount_minor",
+        "currency",
+        "confirmed_at",
+        "source_version",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_refund_execution_succeeded"
+    },
+    {
+      "event_type": "refund.execution.failed",
+      "queue": "after_sales.refund_reconcile",
+      "producer": "payment-adapter",
+      "consumer": "recovery-and-difference-consumer",
+      "payload_required": [
+        "execution_id",
+        "refund_request_id",
+        "failure_code",
+        "retry_decision_ref",
+        "source_version",
+        "environment",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_refund_execution_failed"
+    },
+    {
+      "event_type": "ontology.release.activated",
+      "queue": "after_sales.analytics_projection",
+      "producer": "ontology-publisher",
+      "consumer": "analytics-projector",
+      "payload_required": [
+        "release_id",
+        "manifest_digest",
+        "mapping_version",
+        "metric_version",
+        "activated_at",
+        "actor_subject_id",
+        "customer_id"
+      ],
+      "payload_schema_ref": "data/contracts/events.schema.json#/$defs/payload_ontology_release_activated"
+    }
+  ]
+}

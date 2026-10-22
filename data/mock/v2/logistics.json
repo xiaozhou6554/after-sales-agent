@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "mock-v2",
+  "reference_time": "2026-10-19T04:00:00Z",
+  "synthetic_only": true,
+  "shipments": [
+    {
+      "tenant_id": "tenant-north",
+      "order_id": "ORDER-001",
+      "tracking_number": "MOCK-TRACK-N-001",
+      "status": "delivered",
+      "events": [
+        {"time": "2026-08-30T08:00:00Z", "status": "shipped", "description": "已发出"},
+        {"time": "2026-09-01T08:00:00Z", "status": "delivered", "description": "已签收"}
+      ],
+      "exception_code": null,
+      "estimated_delivery_at": null,
+      "source_version": "mock-logistics-v2:1"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "order_id": "ORDER-002",
+      "tracking_number": "MOCK-TRACK-N-002",
+      "status": "delivered",
+      "events": [
+        {"time": "2026-09-28T08:00:00Z", "status": "shipped", "description": "已发出"},
+        {"time": "2026-10-01T08:00:00Z", "status": "delivered", "description": "已签收，外包装破损"}
+      ],
+      "exception_code": "PACKAGE_DAMAGED",
+      "estimated_delivery_at": null,
+      "source_version": "mock-logistics-v2:1"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "order_id": "ORDER-003",
+      "tracking_number": "MOCK-TRACK-N-003",
+      "status": "in_transit",
+      "events": [
+        {"time": "2026-10-15T08:00:00Z", "status": "shipped", "description": "已发出"},
+        {"time": "2026-10-16T08:00:00Z", "status": "in_transit", "description": "运输中"}
+      ],
+      "exception_code": null,
+      "estimated_delivery_at": "2026-10-22T18:00:00Z",
+      "source_version": "mock-logistics-v2:1"
+    }
+  ]
+}

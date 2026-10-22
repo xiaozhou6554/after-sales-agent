@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "register_version": 1,
+  "status": "pending_external_approval",
+  "rule": "Mock evaluation may use explicitly marked synthetic data. Production reporting and ranking remain disabled until both business and finance approvals are recorded for each metric.",
+  "metrics": [
+    {
+      "metric_id": "return_passed_item_rate",
+      "design_decision": "selected_supervisor_default_candidate",
+      "definition": "WMS accepted return item quantity divided by signed item quantity in the same shipment cohort and fixed observation window; report under the qualified name 验收通过退货件数率.",
+      "business_approval": {
+        "status": "pending",
+        "approver": null,
+        "approved_at": null,
+        "evidence_ref": null
+      },
+      "finance_approval": {
+        "status": "pending",
+        "approver": null,
+        "approved_at": null,
+        "evidence_ref": null
+      },
+      "production_enabled": false
+    },
+    {
+      "metric_id": "return_application_item_rate",
+      "design_decision": "separate_independent_metric",
+      "definition": "Pending selection of numerator unit, eligible denominator unit, and cohort attribution time.",
+      "business_approval": {
+        "status": "pending",
+        "approver": null,
+        "approved_at": null,
+        "evidence_ref": null
+      },
+      "finance_approval": {
+        "status": "pending",
+        "approver": null,
+        "approved_at": null,
+        "evidence_ref": null
+      },
+      "production_enabled": false
+    },
+    {
+      "metric_id": "refund_successful_line_rate",
+      "design_decision": "separate_refund_metric",
+      "definition": "Successfully refunded payment detail count divided by paid detail count in the same payment cohort.",
+      "business_approval": {
+        "status": "pending",
+        "approver": null,
+        "approved_at": null,
+        "evidence_ref": null
+      },
+      "finance_approval": {
+        "status": "pending",
+        "approver": null,
+        "approved_at": null,
+        "evidence_ref": null
+      },
+      "production_enabled": false
+    },
+    {
+      "metric_id": "refund_goods_amount_rate",
+      "design_decision": "separate_refund_metric",
+      "definition": "Successfully refunded goods amount divided by paid goods amount in minor currency units; shipping is reported separately.",
+      "business_approval": {
+        "status": "pending",
+        "approver": null,
+        "approved_at": null,
+        "evidence_ref": null
+      },
+      "finance_approval": {
+        "status": "pending",
+        "approver": null,
+        "approved_at": null,
+        "evidence_ref": null
+      },
+      "production_enabled": false
+    }
+  ]
+}

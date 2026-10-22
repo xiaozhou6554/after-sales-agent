@@ -1,0 +1,32 @@
+{
+  "run_id": "8eb80c3bd4",
+  "warmup_started_at_utc": "2026-10-21T13:10:00.856358+00:00",
+  "warmup_duration_seconds": 2,
+  "warmup_request_count": 4,
+  "warmup_failure_count": 0,
+  "started_at_utc": "2026-10-21T13:10:02.856358+00:00",
+  "finished_at_utc": "2026-10-21T13:10:07.865572+00:00",
+  "virtual_users": 2,
+  "duration_seconds": 5,
+  "measured_duration_seconds": 5.009,
+  "think_time_seconds": 1.0,
+  "operation": "authenticated API GET /notifications?limit=20 (read-only mock customer)",
+  "request_count": 10,
+  "success_count": 10,
+  "failure_count": 0,
+  "availability": 1.0,
+  "latency_ms": {
+    "p50": 18.565,
+    "p95": 29.804,
+    "p99": 29.804,
+    "max": 29.804
+  },
+  "status_counts": {
+    "success": 10
+  },
+  "targets": {
+    "ordinary_read_p95_ms": 5000,
+    "ordinary_read_p99_ms": 10000,
+    "availability": 0.995
+  }
+}

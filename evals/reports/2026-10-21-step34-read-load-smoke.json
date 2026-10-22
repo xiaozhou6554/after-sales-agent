@@ -1,0 +1,27 @@
+{
+  "run_id": "9daec08fcc",
+  "started_at_utc": "2026-10-21T13:00:04.879556+00:00",
+  "finished_at_utc": "2026-10-21T13:00:09.870623+00:00",
+  "virtual_users": 2,
+  "duration_seconds": 5,
+  "think_time_seconds": 1.0,
+  "operation": "authenticated MCP query_order (read-only, mock-v2 ORDER-001)",
+  "request_count": 8,
+  "success_count": 8,
+  "failure_count": 0,
+  "availability": 1.0,
+  "latency_ms": {
+    "p50": 198.211,
+    "p95": 501.486,
+    "p99": 501.486,
+    "max": 501.486
+  },
+  "status_counts": {
+    "success": 8
+  },
+  "targets": {
+    "ordinary_read_p95_ms": 5000,
+    "ordinary_read_p99_ms": 10000,
+    "availability": 0.995
+  }
+}

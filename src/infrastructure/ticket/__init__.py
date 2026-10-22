@@ -1,0 +1,1 @@
+"""Ticket infrastructure adapters."""

@@ -1,0 +1,1 @@
+import sqlalchemy  # 违规样例：领域层禁止导入 ORM

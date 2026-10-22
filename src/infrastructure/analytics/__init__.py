@@ -1,0 +1,1 @@
+"""MySQL analytics adapters."""

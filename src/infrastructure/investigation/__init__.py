@@ -1,0 +1,1 @@
+"""MySQL investigation adapters."""

@@ -1,0 +1,1 @@
+{"schema_version": "1.0", "accounts": [{"tenant_id": "tenant-north", "account_id": "cust-x", "subject_id": "subject-x", "role": "customer", "scopes": ["order:read"], "team_ids": [], "allowed_customer_ids": ["CUSTOMER-01"]}]}

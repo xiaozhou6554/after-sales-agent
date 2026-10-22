@@ -1,0 +1,14 @@
+{
+  "files_sha256": {
+    "README.md": "3e0e15fa0c5cc81675bd69af8eb469d128a725c1a7bfc71f03b7877b7b650567",
+    "config.json": "587cb980af76fdc7e52369fd0b9d926dff266976b6f8ac631e358fecc49ff8cf",
+    "model.safetensors": "9d75c1098fc54a1f7bd270f148884f599765d894639c9c4ee891396968c60df2",
+    "sentencepiece.bpe.model": "0ca6c495f77f3bdde20539e4a471d339ffe9544e3673aaeaff107cc78bc282ae",
+    "special_tokens_map.json": "c07a9be597b7eef114dd2ee38235417da066e82167e353d9c94b3813ddb05945",
+    "tokenizer.json": "224931eb13f8d2471acd38a4a0d7417d20e8ea340160a467ceaa359d25197b87",
+    "tokenizer_config.json": "94d5c6ba8f6b990e469897eee34148ec632ff2bdf718a02a9f05f99e9fe18f99"
+  },
+  "license": "mit",
+  "revision": "2cfc18c9415c912f9d8155881c133215df768a70",
+  "source": "https://huggingface.co/BAAI/bge-reranker-base"
+}

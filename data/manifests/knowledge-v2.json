@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "mock-v2",
+  "knowledge_release_id": "KNOWLEDGE-RELEASE-2026-10",
+  "status": "draft",
+  "synthetic_only": true,
+  "documents": [
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-RETURN-CURRENT",
+      "chunk_id": "DOC-RETURN-CURRENT:v2:0001",
+      "evidence_id": "KNOW-EV-RETURN-02",
+      "version": 2,
+      "status": "published",
+      "content_sha256": "03b6366fd1d0dd8cee4430aecf2b3a7dfb2718b07ff288663651a8f38dcdaad7"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-RETURN-LEGACY",
+      "chunk_id": "DOC-RETURN-LEGACY:v1:0001",
+      "evidence_id": "KNOW-EV-RETURN-01",
+      "version": 1,
+      "status": "retired",
+      "content_sha256": "88d0ca77ad22205ce86a675c1cdb16a1c54e83f36b7169a6ec7a70b1a136fa06"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-RETURN-DRAFT",
+      "chunk_id": "DOC-RETURN-DRAFT:v3:0001",
+      "evidence_id": "KNOW-EV-RETURN-DRAFT",
+      "version": 3,
+      "status": "draft",
+      "content_sha256": "71e442ecc8c152242a545457a6e158e1e2d356d2817d3e1bca155af6308c1f0d"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-REFUND-CURRENT",
+      "chunk_id": "DOC-REFUND-CURRENT:v1:0001",
+      "evidence_id": "KNOW-EV-REFUND-01",
+      "version": 1,
+      "status": "published",
+      "content_sha256": "817bfb73ef17a6dde874bec2c36eec48b724a25b5fd4d273636c5caf1318ecef"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-PRODUCT-AIR-01",
+      "chunk_id": "DOC-PRODUCT-AIR-01:v1:0001",
+      "evidence_id": "KNOW-EV-PRODUCT-01",
+      "version": 1,
+      "status": "published",
+      "content_sha256": "eaaa5da0205d3eb1abf0bfa045118e08c4da511e622792ebb1a4c1fa6fb94ff4"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-FILTER-F-01",
+      "chunk_id": "DOC-FILTER-F-01:v1:0001",
+      "evidence_id": "KNOW-EV-FILTER-01",
+      "version": 1,
+      "status": "published",
+      "content_sha256": "5fd2420f4a043e937e02949d6e031994d12786f2016cd827732c90ddc934c536"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-FAQ-FILTER-01",
+      "chunk_id": "DOC-FAQ-FILTER-01:v1:0001",
+      "evidence_id": "KNOW-EV-FAQ-FILTER-01",
+      "version": 1,
+      "status": "published",
+      "content_sha256": "b9e74e9bf5f3ebb32a9efc7016e2504a32b3a0a29bdab24710af1984ea626037"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-FAULT-F23",
+      "chunk_id": "DOC-FAULT-F23:v1:0001",
+      "evidence_id": "KNOW-EV-FAULT-01",
+      "version": 1,
+      "status": "published",
+      "content_sha256": "5fd74473e136681b527c50f4f6396e5bb7cf75b9453d06b10499aec60f144634"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-SERIAL-RETURN",
+      "chunk_id": "DOC-SERIAL-RETURN:v1:0001",
+      "evidence_id": "KNOW-EV-SERIAL-01",
+      "version": 1,
+      "status": "published",
+      "content_sha256": "33712363c13bc58110838b44c67043b89c11d650fc31d432d1c204f539f04417"
+    },
+    {
+      "tenant_id": "tenant-south",
+      "document_id": "DOC-SOUTH-RETURN",
+      "chunk_id": "DOC-SOUTH-RETURN:v1:0001",
+      "evidence_id": "KNOW-EV-SOUTH-01",
+      "version": 1,
+      "status": "published",
+      "content_sha256": "717b3ebf8de09177995a855372e513dbbb7bc697d030fae02f9cc10c3f836a5d"
+    }
+  ],
+  "graph": {
+    "nodes": 9,
+    "edges": 7
+  },
+  "labels": {
+    "development": 4,
+    "holdout": 3
+  },
+  "files": {
+    "data/knowledge/v2/corpus.json": "0ba961ce80c7a7d0b4ee942152df27a10f4fead0fe7b3aca3cfecb2b50b05d3b",
+    "data/knowledge/v2/evidence.json": "44948b8e7010e3a0fb3c6341ea34b54b450ed697a5b8590d298d0ac8d7c957c8",
+    "data/knowledge/v2/ontology/core.ttl": "6c2a293787cf6db11c80b1d80bd495dbcb5e04c044694e5b27a810e0a6375492",
+    "data/knowledge/v2/ontology/constraints.shacl.ttl": "1f4722b6b57798f97a9e670063e2e67724143a4e09cd2104ac2f951b9d5fe1a5",
+    "data/knowledge/v2/ontology/source_mappings.json": "f8fc8c34aaea1ca43fcafa55a1b17b0a2ef5a376f7ea251ad2ddd0cf0b06c5f8",
+    "data/scenarios/v2/knowledge_labels.jsonl": "6d0c4e74437079bf5c897bcbc617cc4369c4c78d38a90f85cf706b8706655d61"
+  }
+}

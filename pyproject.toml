@@ -1,0 +1,88 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "after-sales-agent"
+version = "0.1.0"
+description = "企业智能售后服务 Agent（一期）：单一Supervisor、确定性业务工作流与多系统售后闭环"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    # Web 与配置
+    "fastapi==0.146.0",
+    "uvicorn==0.54.0",
+    "pydantic==2.14.1",
+    "pydantic-settings==2.15.0",
+    # 数据库 / 缓存 / 消息 / 图谱
+    "SQLAlchemy==2.0.55",
+    "PyMySQL==1.2.3",
+    "redis==5.3.1",
+    "pika==1.4.4",
+    "neo4j==6.4.1",
+    # 检索
+    "chromadb==1.5.9",
+    "rank-bm25==0.2.2",
+    "jieba==0.42.1",
+    "numpy==2.2.6",
+    "huggingface-hub==1.33.0",
+    # 本体校验
+    "rdflib==7.6.0",
+    "pyshacl==0.40.1",
+    # 模型与 Agent 编排
+    "langgraph==1.2.16",
+    "langgraph-checkpoint==4.3.0",
+    "langchain==1.4.6",
+    "langchain-core==1.6.12",
+    "langchain-deepseek==1.1.1",
+    "langchain-huggingface==1.2.3",
+    "sentence-transformers==6.1.0",
+    # MCP 协议与客户端适配
+    "mcp==1.30.0",
+    "langchain-mcp-adapters==0.3.2",
+    # 通用
+    "httpx==0.28.1",
+    "cryptography==50.0.2",
+    "jsonschema==4.26.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.4.2",
+    "pytest-asyncio==0.26.0",
+    "ruff==0.17.1",
+]
+
+[project.scripts]
+after-sales-api = "bootstrap.api_main:main"
+after-sales-mcp = "bootstrap.mcp_main:main"
+after-sales-worker = "bootstrap.worker_main:main"
+after-sales-migrate = "bootstrap.migrate:main"
+after-sales-infra-check = "bootstrap.infrastructure_check:main"
+
+[tool.setuptools]
+# src/ 下四层包、根目录 bootstrap/ 与 migrations/ 一并打包，避免安装后丢失启动组装。
+# 使用 setuptools 而非 hatchling：本项目路径含中文，hatchling 可编辑安装写入的
+# UTF-8 .pth 会被 Python 3.10 的 site.py 按 GBK 解码导致解释器启动失败；
+# setuptools 的 finder 式可编辑安装 .pth 内容为纯 ASCII，不受影响。
+packages = ["interface", "application", "domain", "infrastructure", "bootstrap", "migrations"]
+
+[tool.setuptools.package-dir]
+interface = "src/interface"
+application = "src/application"
+domain = "src/domain"
+infrastructure = "src/infrastructure"
+bootstrap = "bootstrap"
+migrations = "migrations"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "bootstrap", "tests"]
+extend-exclude = [".pytest*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

@@ -1,0 +1,107 @@
+{
+  "model": "deepseek-chat",
+  "dataset_version": "mock-v2",
+  "release_id": "KNOWLEDGE-RELEASE-2026-10",
+  "case_count": 7,
+  "results": [
+    {
+      "case_id": "K16-01",
+      "split": "development",
+      "expected_outcome": "answerable",
+      "expected_documents": [
+        "DOC-RETURN-CURRENT"
+      ],
+      "accepted_documents": [
+        "DOC-RETURN-CURRENT"
+      ],
+      "rerank_status": "success",
+      "answer": "**结论：签收后 7 天内要提交退货申请。**\n\n关键事实：\n- 退货申请要在签收后 7 天内提交。\n- 退款审批、仓库收货和付款执行是分开的状态，提交申请不等于退款马上完成。\n\n下一步：如果你要办理具体订单的退货，请提供订单号，我帮你核对是否还在申请期限内。",
+      "elapsed_ms": 1451.799
+    },
+    {
+      "case_id": "K16-02",
+      "split": "development",
+      "expected_outcome": "answerable",
+      "expected_documents": [
+        "DOC-FILTER-F-01"
+      ],
+      "accepted_documents": [
+        "DOC-FAQ-FILTER-01",
+        "DOC-PRODUCT-AIR-01",
+        "DOC-FILTER-F-01"
+      ],
+      "rerank_status": "success",
+      "answer": "Air purifier A 兼容 **Filter F-01**。\n\n关键事实：\n- 产品资料显示，Air purifier A（产品编号 product-air-01）使用滤芯 filter-f-01。\n- 兼容性资料也确认 Filter F-01 与 product-air-01 兼容。\n- 更换前请核对产品型号，名称相近不代表一定兼容。\n\n下一步：购买或更换前，请确认你的机器型号是 product-air-01。",
+      "elapsed_ms": 975.994
+    },
+    {
+      "case_id": "K16-03",
+      "split": "development",
+      "expected_outcome": "answerable",
+      "expected_documents": [
+        "DOC-FAULT-F23"
+      ],
+      "accepted_documents": [
+        "DOC-FAULT-F23"
+      ],
+      "rerank_status": "success",
+      "answer": "**直接结论：** F23 表示进气传感器异常，需要按故障排查流程检查，并把测试结果记录到工单中。\n\n**关键事实：**\n1. F23 对应进气传感器问题。\n2. 排查完成后，需要把测试结果记录到工单。\n3. 该说明不涉及退款资格判断。\n\n**下一步：** 请先确认设备型号，我再帮你核对对应的排查步骤。",
+      "elapsed_ms": 805.208
+    },
+    {
+      "case_id": "K16-04",
+      "split": "holdout",
+      "expected_outcome": "no_answer",
+      "expected_documents": [],
+      "accepted_documents": [],
+      "rerank_status": "success",
+      "answer": "这个信息我暂时无法确认。当前没有可用的退货政策依据，我不能判断是否存在“终身免费换新”的规定。\n\n下一步：你可以提供具体商品或订单场景，我帮你创建售后工单核实；也可以转接在线人工客服确认政策原文。",
+      "elapsed_ms": 1242.7
+    },
+    {
+      "case_id": "K16-05",
+      "split": "holdout",
+      "expected_outcome": "version_sensitive",
+      "expected_documents": [
+        "DOC-RETURN-CURRENT",
+        "DOC-RETURN-LEGACY"
+      ],
+      "accepted_documents": [
+        "DOC-RETURN-CURRENT"
+      ],
+      "rerank_status": "success",
+      "answer": "这个信息我暂时无法确认：目前只能查到现行退货规则，没有 2025 年退货政策的内容，无法判断两者是否一样。\n\n关键事实：\n- 现行规则要求：签收后 7 天内提交退货申请。\n- 退款审核、仓库收货和付款执行是分开的状态，不能当作同一环节。\n- 2025 年的政策版本和具体条款，现有资料没有提供。\n\n下一步：如果你要确认某笔订单适用哪版政策，请提供订单号，我帮你核对；也可以帮你转接在线人工客服进一步确认。",
+      "elapsed_ms": 1035.559
+    },
+    {
+      "case_id": "K16-06",
+      "split": "holdout",
+      "expected_outcome": "answerable",
+      "expected_documents": [
+        "DOC-SOUTH-RETURN"
+      ],
+      "accepted_documents": [
+        "DOC-SOUTH-RETURN"
+      ],
+      "rerank_status": "success",
+      "answer": "这个信息我暂时无法确认。检索到的内容只说明该退货政策仅适用于特定租户范围，没有提供具体退货规则，因此不能据此给出政策结论。\n\n下一步：你可以创建售后工单，或转接在线人工客服，由人工核实并答复。",
+      "elapsed_ms": 1452.276
+    },
+    {
+      "case_id": "K16-07",
+      "split": "development",
+      "expected_outcome": "answerable",
+      "expected_documents": [
+        "DOC-FAQ-FILTER-01"
+      ],
+      "accepted_documents": [
+        "DOC-FAQ-FILTER-01",
+        "DOC-PRODUCT-AIR-01",
+        "DOC-FILTER-F-01"
+      ],
+      "rerank_status": "success",
+      "answer": "可以。净化器A（产品型号 product-air-01）可使用 F-01 滤芯，F-01 也仅适配该型号。\n\n关键事实：\n- 产品资料明确：净化器A使用 F-01 滤芯。\n- 滤芯资料明确：F-01 仅兼容 product-air-01。\n- 更换前请核对机身产品型号，避免因名称相近买错。\n\n下一步：请查看净化器机身铭牌上的型号是否为 product-air-01；如果不是，先不要购买 F-01。",
+      "elapsed_ms": 1341.481
+    }
+  ]
+}

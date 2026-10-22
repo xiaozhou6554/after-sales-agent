@@ -1,0 +1,64 @@
+@prefix : <urn:after-sales-agent:ontology:v2#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:CanonicalProductShape a sh:NodeShape ; sh:targetClass :CanonicalProduct ;
+  sh:property [ sh:path :canonicalProductId ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ; sh:minLength 1 ] ;
+  sh:property [ sh:path :belongsToTenant ; sh:class :Tenant ; sh:minCount 1 ; sh:maxCount 1 ] .
+:SourceProductMappingShape a sh:NodeShape ; sh:targetClass :SourceProductMapping ;
+  sh:property [ sh:path :sourceSystem ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ; sh:minLength 1 ] ;
+  sh:property [ sh:path :sourceRecordId ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ; sh:minLength 1 ] ;
+  sh:property [ sh:path :belongsToTenant ; sh:class :Tenant ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :mappingVersion ; sh:datatype xsd:positiveInteger ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :mappingStatus ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( "active"^^xsd:string "ambiguous"^^xsd:string "unmapped"^^xsd:string "expired"^^xsd:string ) ] ;
+  sh:property [ sh:path :validFrom ; sh:datatype xsd:date ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :validTo ; sh:datatype xsd:date ; sh:maxCount 1 ] ;
+  sh:xone ( :ActiveMappingShape :AmbiguousMappingShape :UnresolvedMappingShape ) ;
+  sh:sparql [
+    sh:message "An ambiguous source key must have at least two distinct canonical candidates." ;
+    sh:select """
+      SELECT $this WHERE {
+        $this :mappingStatus "ambiguous" ; :belongsToTenant ?tenant ; :sourceSystem ?system ; :sourceRecordId ?sourceId ; :validFrom ?validFrom .
+        OPTIONAL { $this :validTo ?validTo . }
+        { SELECT ?tenant ?system ?sourceId ?validFrom ?validTo (COUNT(DISTINCT ?target) AS ?candidateCount) WHERE {
+            ?candidate a :SourceProductMapping ; :mappingStatus "ambiguous" ; :belongsToTenant ?tenant ; :sourceSystem ?system ; :sourceRecordId ?sourceId ; :validFrom ?validFrom ; :mapsToCanonicalProduct ?target .
+            OPTIONAL { ?candidate :validTo ?validTo . }
+          } GROUP BY ?tenant ?system ?sourceId ?validFrom ?validTo }
+        FILTER (?candidateCount < 2)
+      }
+    """
+  ] .
+:ActiveMappingShape a sh:NodeShape ; sh:property [ sh:path :mappingStatus ; sh:hasValue "active"^^xsd:string ] ;
+  sh:property [ sh:path :mapsToCanonicalProduct ; sh:class :CanonicalProduct ; sh:minCount 1 ; sh:maxCount 1 ] .
+:AmbiguousMappingShape a sh:NodeShape ; sh:property [ sh:path :mappingStatus ; sh:hasValue "ambiguous"^^xsd:string ] ;
+  sh:property [ sh:path :mapsToCanonicalProduct ; sh:class :CanonicalProduct ; sh:minCount 1 ; sh:maxCount 1 ] .
+:UnresolvedMappingShape a sh:NodeShape ; sh:property [ sh:path :mappingStatus ; sh:in ( "unmapped"^^xsd:string "expired"^^xsd:string ) ] ;
+  sh:property [ sh:path :mapsToCanonicalProduct ; sh:maxCount 0 ] .
+:EvidenceShape a sh:NodeShape ; sh:targetClass :Evidence ;
+  sh:property [ sh:path :evidenceId ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ; sh:minLength 1 ] ;
+  sh:property [ sh:path :evidenceType ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :sourceRecordId ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :sourceSystem ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :belongsToTenant ; sh:class :Tenant ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :observedAt ; sh:datatype xsd:dateTime ; sh:minCount 1 ; sh:maxCount 1 ] .
+:MetricDefinitionShape a sh:NodeShape ; sh:targetClass :MetricDefinition ;
+  sh:property [ sh:path :metricId ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :metricVersion ; sh:datatype xsd:positiveInteger ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :numeratorDefinition ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :denominatorDefinition ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :businessApprovalStatus ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( "pending"^^xsd:string "approved"^^xsd:string "rejected"^^xsd:string ) ] ;
+  sh:xone ( :PendingMetricShape :ApprovedMetricShape :RejectedMetricShape ) .
+:PendingMetricShape a sh:NodeShape ; sh:property [ sh:path :businessApprovalStatus ; sh:hasValue "pending"^^xsd:string ] ;
+  sh:property [ sh:path :productionEnabled ; sh:hasValue false ] .
+:ApprovedMetricShape a sh:NodeShape ; sh:property [ sh:path :businessApprovalStatus ; sh:hasValue "approved"^^xsd:string ] ;
+  sh:property [ sh:path :productionEnabled ; sh:hasValue true ] ;
+  sh:property [ sh:path :formula ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :sampleUnit ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] .
+:RejectedMetricShape a sh:NodeShape ; sh:property [ sh:path :businessApprovalStatus ; sh:hasValue "rejected"^^xsd:string ] ;
+  sh:property [ sh:path :productionEnabled ; sh:hasValue false ] .
+:OntologyReleaseShape a sh:NodeShape ; sh:targetClass :OntologyRelease ;
+  sh:property [ sh:path :releaseId ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :schemaVersion ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :manifestDigest ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ; sh:pattern "^[a-f0-9]{64}$" ] ;
+  sh:property [ sh:path :releaseRevision ; sh:datatype xsd:positiveInteger ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path :releaseStatus ; sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ( "candidate"^^xsd:string "validated"^^xsd:string "active"^^xsd:string "retired"^^xsd:string ) ] .

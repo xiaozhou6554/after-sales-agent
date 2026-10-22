@@ -1,0 +1,51 @@
+@prefix : <urn:after-sales-agent:ontology:v2#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AfterSalesOntology a owl:Ontology ; owl:versionInfo "2.0" .
+:Product a owl:Class ; owl:equivalentClass :CanonicalProduct .
+:CanonicalProduct a owl:Class .
+:SourceProduct a owl:Class .
+:SourceProductMapping a owl:Class .
+:Evidence a owl:Class .
+:MetricDefinition a owl:Class .
+:OntologyRelease a owl:Class .
+:Order a owl:Class .
+:OrderLine a owl:Class .
+:ShipmentBatch a owl:Class .
+:ReturnAuthorization a owl:Class .
+:WarehouseReceipt a owl:Class .
+:Inspection a owl:Class .
+:Payment a owl:Class .
+:RefundExecution a owl:Class .
+:MetricSnapshot a owl:Class .
+:AnomalyInvestigation a owl:Class .
+:Tenant a owl:Class .
+:belongsToTenant a owl:ObjectProperty ; rdfs:range :Tenant .
+:mapsToCanonicalProduct a owl:ObjectProperty ; rdfs:domain :SourceProductMapping ; rdfs:range :CanonicalProduct .
+:referencesOrder a owl:ObjectProperty ; rdfs:range :Order .
+:hasEvidence a owl:ObjectProperty ; rdfs:range :Evidence .
+:sourceSystem a owl:DatatypeProperty ; rdfs:range xsd:string .
+:sourceRecordId a owl:DatatypeProperty ; rdfs:range xsd:string .
+:canonicalProductId a owl:DatatypeProperty ; rdfs:range xsd:string .
+:mappingVersion a owl:DatatypeProperty ; rdfs:range xsd:positiveInteger .
+:mappingStatus a owl:DatatypeProperty ; rdfs:range xsd:string .
+:validFrom a owl:DatatypeProperty ; rdfs:range xsd:date .
+:validTo a owl:DatatypeProperty ; rdfs:range xsd:date .
+:evidenceId a owl:DatatypeProperty ; rdfs:range xsd:string .
+:evidenceType a owl:DatatypeProperty ; rdfs:range xsd:string .
+:observedAt a owl:DatatypeProperty ; rdfs:range xsd:dateTime .
+:metricId a owl:DatatypeProperty ; rdfs:range xsd:string .
+:metricVersion a owl:DatatypeProperty ; rdfs:range xsd:positiveInteger .
+:numeratorDefinition a owl:DatatypeProperty ; rdfs:range xsd:string .
+:denominatorDefinition a owl:DatatypeProperty ; rdfs:range xsd:string .
+:sampleUnit a owl:DatatypeProperty ; rdfs:range xsd:string .
+:formula a owl:DatatypeProperty ; rdfs:range xsd:string .
+:businessApprovalStatus a owl:DatatypeProperty ; rdfs:range xsd:string .
+:productionEnabled a owl:DatatypeProperty ; rdfs:range xsd:boolean .
+:releaseId a owl:DatatypeProperty ; rdfs:range xsd:string .
+:schemaVersion a owl:DatatypeProperty ; rdfs:range xsd:string .
+:manifestDigest a owl:DatatypeProperty ; rdfs:range xsd:string .
+:releaseStatus a owl:DatatypeProperty ; rdfs:range xsd:string .
+:releaseRevision a owl:DatatypeProperty ; rdfs:range xsd:positiveInteger .

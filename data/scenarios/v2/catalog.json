@@ -1,0 +1,23 @@
+{
+  "schema_version": "2.0",
+  "dataset_version": "mock-v2",
+  "total_cases": 149,
+  "requirement_tc_count": 131,
+  "mapped_tc_count": 131,
+  "development_cases": 130,
+  "holdout_cases": 19,
+  "holdout_is_blind": false,
+  "tc_range": "TC-01..TC-128 (all requirement TCs mapped)",
+  "execution_readiness": "design_only",
+  "execution_blockers": [
+    "No application source code or scenario harness is present in the repository.",
+    "Design fixtures copied from requirement criteria are not executable acceptance tests until each criterion is bound to runtime assertions."
+  ],
+  "scenario_contract": {
+    "mcp_tool_calls": "Only registered MCP tools with real arguments and requester scopes.",
+    "workflow_steps": "Application, orchestration, ontology, WMS and payment operations use distinct execution identities.",
+    "acceptance_criteria": "Verbatim requirement criteria accompany every TC; criteria are not counted as passed runtime assertions.",
+    "execution_readiness_rule": "Keep design_only until a harness executes scenarios against the application and system adapters."
+  },
+  "scenario_file": "data/scenarios/v2/multi_system.jsonl"
+}

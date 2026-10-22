@@ -1,0 +1,7 @@
+{"case_id":"K16-01","tenant_id":"tenant-north","split":"development","question":"退货要在签收后几天申请？","expected_outcome":"answerable","document_ids":["DOC-RETURN-CURRENT"],"evidence_ids":["KNOW-EV-RETURN-02"],"edge_ids":[]}
+{"case_id":"K16-02","tenant_id":"tenant-north","split":"development","question":"Air purifier A 兼容哪款滤芯？","expected_outcome":"answerable","document_ids":["DOC-FILTER-F-01"],"evidence_ids":["KNOW-EV-FILTER-01"],"edge_ids":["KG-001"]}
+{"case_id":"K16-03","tenant_id":"tenant-north","split":"development","question":"F23 故障如何处理？","expected_outcome":"answerable","document_ids":["DOC-FAULT-F23"],"evidence_ids":["KNOW-EV-FAULT-01"],"edge_ids":["KG-003","KG-004"]}
+{"case_id":"K16-04","tenant_id":"tenant-north","split":"holdout","question":"退货政策是否规定终身免费换新？","expected_outcome":"no_answer","document_ids":[],"evidence_ids":[],"edge_ids":[]}
+{"case_id":"K16-05","tenant_id":"tenant-north","split":"holdout","question":"2025 年退货政策与现在一样吗？","expected_outcome":"version_sensitive","document_ids":["DOC-RETURN-CURRENT","DOC-RETURN-LEGACY"],"evidence_ids":["KNOW-EV-RETURN-02","KNOW-EV-RETURN-01"],"edge_ids":[]}
+{"case_id":"K16-06","tenant_id":"tenant-south","split":"holdout","question":"南区退货政策是什么？","expected_outcome":"answerable","document_ids":["DOC-SOUTH-RETURN"],"evidence_ids":["KNOW-EV-SOUTH-01"],"edge_ids":["KG-091"]}
+{"case_id":"K16-07","tenant_id":"tenant-north","split":"development","question":"净化器A能使用F-01滤芯吗？","expected_outcome":"answerable","document_ids":["DOC-FAQ-FILTER-01"],"evidence_ids":["KNOW-EV-FAQ-FILTER-01"],"edge_ids":["KG-001"]}

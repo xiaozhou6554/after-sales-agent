@@ -1,0 +1,117 @@
+{
+  "dataset_version": "mock-v2",
+  "label_sha256": "6d0c4e74437079bf5c897bcbc617cc4369c4c78d38a90f85cf706b8706655d61",
+  "knowledge_release_id": "KNOWLEDGE-RELEASE-2026-10",
+  "relevant_case_count": 6,
+  "relevant_document_count": 7,
+  "fused_candidate_document_hits": 6,
+  "recall_at_10": 0.857143,
+  "mrr_at_3_reciprocal_sum": 5.333333,
+  "mrr_at_3_denominator": 6,
+  "mrr_at_3": 0.888889,
+  "results": [
+    {
+      "case_id": "K16-01",
+      "split": "development",
+      "expected_documents": [
+        "DOC-RETURN-CURRENT"
+      ],
+      "fused_candidates_top_10": [
+        "DOC-RETURN-CURRENT",
+        "DOC-REFUND-CURRENT",
+        "DOC-SERIAL-RETURN"
+      ],
+      "final_reranked_top_3": [
+        "DOC-RETURN-CURRENT"
+      ],
+      "rerank_status": "success",
+      "first_relevant_rank": 1
+    },
+    {
+      "case_id": "K16-02",
+      "split": "development",
+      "expected_documents": [
+        "DOC-FILTER-F-01"
+      ],
+      "fused_candidates_top_10": [
+        "DOC-PRODUCT-AIR-01",
+        "DOC-FAQ-FILTER-01",
+        "DOC-FILTER-F-01"
+      ],
+      "final_reranked_top_3": [
+        "DOC-FAQ-FILTER-01",
+        "DOC-PRODUCT-AIR-01",
+        "DOC-FILTER-F-01"
+      ],
+      "rerank_status": "success",
+      "first_relevant_rank": 3
+    },
+    {
+      "case_id": "K16-03",
+      "split": "development",
+      "expected_documents": [
+        "DOC-FAULT-F23"
+      ],
+      "fused_candidates_top_10": [
+        "DOC-FAULT-F23",
+        "DOC-FAQ-FILTER-01"
+      ],
+      "final_reranked_top_3": [
+        "DOC-FAULT-F23"
+      ],
+      "rerank_status": "success",
+      "first_relevant_rank": 1
+    },
+    {
+      "case_id": "K16-05",
+      "split": "holdout",
+      "expected_documents": [
+        "DOC-RETURN-CURRENT",
+        "DOC-RETURN-LEGACY"
+      ],
+      "fused_candidates_top_10": [
+        "DOC-RETURN-CURRENT",
+        "DOC-REFUND-CURRENT"
+      ],
+      "final_reranked_top_3": [
+        "DOC-RETURN-CURRENT"
+      ],
+      "rerank_status": "success",
+      "first_relevant_rank": 1
+    },
+    {
+      "case_id": "K16-06",
+      "split": "holdout",
+      "expected_documents": [
+        "DOC-SOUTH-RETURN"
+      ],
+      "fused_candidates_top_10": [
+        "DOC-SOUTH-RETURN"
+      ],
+      "final_reranked_top_3": [
+        "DOC-SOUTH-RETURN"
+      ],
+      "rerank_status": "success",
+      "first_relevant_rank": 1
+    },
+    {
+      "case_id": "K16-07",
+      "split": "development",
+      "expected_documents": [
+        "DOC-FAQ-FILTER-01"
+      ],
+      "fused_candidates_top_10": [
+        "DOC-FAQ-FILTER-01",
+        "DOC-PRODUCT-AIR-01",
+        "DOC-FILTER-F-01"
+      ],
+      "final_reranked_top_3": [
+        "DOC-FAQ-FILTER-01",
+        "DOC-PRODUCT-AIR-01",
+        "DOC-FILTER-F-01"
+      ],
+      "rerank_status": "success",
+      "first_relevant_rank": 1
+    }
+  ]
+}

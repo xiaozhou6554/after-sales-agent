@@ -1,0 +1,17 @@
+{
+  "started_at_utc": "2026-10-21T13:01:01.038347+00:00",
+  "finished_at_utc": "2026-10-21T13:01:31.622285+00:00",
+  "app_env": "development",
+  "worker_entry_point": "python -m bootstrap.worker_main",
+  "mock_handlers_only": true,
+  "initial_outbox_status_counts": {
+    "pending": 50
+  },
+  "final_outbox_status_counts": {
+    "published": 72
+  },
+  "initial_pending_or_publishing": 50,
+  "remaining_pending_or_publishing": 0,
+  "worker_exit_code": 1,
+  "recovered": true
+}

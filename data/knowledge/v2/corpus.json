@@ -1,0 +1,534 @@
+{
+  "schema_version": "2.0",
+  "dataset_version": "mock-v2",
+  "synthetic_only": true,
+  "release_id": "KNOWLEDGE-RELEASE-2026-10",
+  "coverage_tags": [
+    "synonym",
+    "typo",
+    "multi_hop",
+    "expired_version",
+    "draft_conflict",
+    "long_tail",
+    "no_answer",
+    "tenant_scope"
+  ],
+  "documents": [
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-RETURN-CURRENT",
+      "policy_id": "POL-RETURN-01",
+      "version": 2,
+      "status": "published",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "title": "Return policy 2026",
+      "aliases": [
+        "return",
+        "send back",
+        "return request",
+        "退货",
+        "退回",
+        "申请退货",
+        "退货政策"
+      ],
+      "content": "Submit a return request within 7 days after delivery. Refund approval, warehouse receipt and payment execution are separate states.",
+      "tags": [
+        "return",
+        "synonym",
+        "current"
+      ],
+      "evidence_id": "KNOW-EV-RETURN-02"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-RETURN-LEGACY",
+      "policy_id": "POL-RETURN-01",
+      "version": 1,
+      "status": "retired",
+      "valid_from": "2025-01-01",
+      "valid_to": "2025-12-31",
+      "title": "Return policy archived",
+      "aliases": [
+        "old return policy"
+      ],
+      "content": "Retired policy; use only for historical transactions under its effective date.",
+      "tags": [
+        "return",
+        "expired_version"
+      ],
+      "evidence_id": "KNOW-EV-RETURN-01"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-RETURN-DRAFT",
+      "policy_id": "POL-RETURN-01",
+      "version": 3,
+      "status": "draft",
+      "valid_from": "2026-11-01",
+      "valid_to": null,
+      "title": "Return policy draft",
+      "aliases": [],
+      "content": "Unapproved draft proposing a 30-day window. Do not use in customer answers.",
+      "tags": [
+        "return",
+        "draft_conflict"
+      ],
+      "evidence_id": "KNOW-EV-RETURN-DRAFT"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-REFUND-CURRENT",
+      "policy_id": "POL-REFUND-02",
+      "version": 1,
+      "status": "published",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "title": "Refund review and settlement",
+      "aliases": [
+        "refund status",
+        "refund arrival",
+        "money back"
+      ],
+      "content": "Show review, warehouse and funds status separately. Only an authoritative payment query confirms settlement.",
+      "tags": [
+        "refund",
+        "three_state"
+      ],
+      "evidence_id": "KNOW-EV-REFUND-01"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-PRODUCT-AIR-01",
+      "policy_id": null,
+      "version": 1,
+      "status": "published",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "title": "Air purifier A product guide",
+      "aliases": [
+        "air purifier A",
+        "purifier A",
+        "air purifer A",
+        "净化器A",
+        "空气净化器A"
+      ],
+      "content": "Product product-air-01 uses filter-f-01. Similar names do not imply compatibility. Misspelled alias is for retrieval testing.",
+      "tags": [
+        "product",
+        "synonym",
+        "typo"
+      ],
+      "evidence_id": "KNOW-EV-PRODUCT-01"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-FILTER-F-01",
+      "policy_id": null,
+      "version": 1,
+      "status": "published",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "title": "Filter F-01 compatibility",
+      "aliases": [
+        "F01 filter"
+      ],
+      "content": "Filter filter-f-01 is compatible only with product-air-01.",
+      "tags": [
+        "accessory",
+        "multi_hop"
+      ],
+      "evidence_id": "KNOW-EV-FILTER-01"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-FAQ-FILTER-01",
+      "policy_id": null,
+      "version": 1,
+      "status": "published",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "title": "FAQ: Filter F-01 compatibility",
+      "aliases": [
+        "Can purifier A use F-01?",
+        "净化器A滤芯"
+      ],
+      "content": "FAQ: Can Air purifier A use Filter F-01? Yes. Filter F-01 is compatible with product-air-01. Check the product model before replacement.",
+      "tags": [
+        "faq",
+        "accessory"
+      ],
+      "evidence_id": "KNOW-EV-FAQ-FILTER-01"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-FAULT-F23",
+      "policy_id": null,
+      "version": 1,
+      "status": "published",
+      "valid_from": "2026-02-01",
+      "valid_to": null,
+      "title": "Fault code F-23 troubleshooting",
+      "aliases": [
+        "F23",
+        "error code F-23"
+      ],
+      "content": "F-23 indicates an intake sensor issue. Record test results in the work order. This guide does not establish refund eligibility.",
+      "tags": [
+        "fault_code",
+        "long_tail"
+      ],
+      "evidence_id": "KNOW-EV-FAULT-01"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "document_id": "DOC-SERIAL-RETURN",
+      "policy_id": "POL-RETURN-01",
+      "version": 1,
+      "status": "published",
+      "valid_from": "2026-04-01",
+      "valid_to": null,
+      "title": "Serial-number return inspection",
+      "aliases": [
+        "serial number return",
+        "SN return"
+      ],
+      "content": "Record serial number and inspection result. Quarantine mismatches; do not infer a refund amount.",
+      "tags": [
+        "long_tail",
+        "warehouse"
+      ],
+      "evidence_id": "KNOW-EV-SERIAL-01"
+    },
+    {
+      "tenant_id": "tenant-south",
+      "document_id": "DOC-SOUTH-RETURN",
+      "policy_id": "POL-RETURN-91",
+      "version": 1,
+      "status": "published",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "title": "South tenant return policy",
+      "aliases": [
+        "return policy"
+      ],
+      "content": "This policy applies only to tenant-south. Never use a same-name policy from another tenant.",
+      "tags": [
+        "tenant_scope",
+        "return"
+      ],
+      "evidence_id": "KNOW-EV-SOUTH-01"
+    }
+  ],
+  "evidence": [
+    {
+      "tenant_id": "tenant-north",
+      "evidence_id": "KNOW-EV-RETURN-02",
+      "source_system": "KNOWLEDGE",
+      "source_record_id": "DOC-RETURN-CURRENT",
+      "source_version": "DOC-RETURN-CURRENT:v2",
+      "document_id": "DOC-RETURN-CURRENT",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "status": "published"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "evidence_id": "KNOW-EV-RETURN-01",
+      "source_system": "KNOWLEDGE",
+      "source_record_id": "DOC-RETURN-LEGACY",
+      "source_version": "DOC-RETURN-LEGACY:v1",
+      "document_id": "DOC-RETURN-LEGACY",
+      "valid_from": "2025-01-01",
+      "valid_to": "2025-12-31",
+      "status": "retired"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "evidence_id": "KNOW-EV-RETURN-DRAFT",
+      "source_system": "KNOWLEDGE",
+      "source_record_id": "DOC-RETURN-DRAFT",
+      "source_version": "DOC-RETURN-DRAFT:v3",
+      "document_id": "DOC-RETURN-DRAFT",
+      "valid_from": "2026-11-01",
+      "valid_to": null,
+      "status": "draft"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "evidence_id": "KNOW-EV-REFUND-01",
+      "source_system": "KNOWLEDGE",
+      "source_record_id": "DOC-REFUND-CURRENT",
+      "source_version": "DOC-REFUND-CURRENT:v1",
+      "document_id": "DOC-REFUND-CURRENT",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "status": "published"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "evidence_id": "KNOW-EV-PRODUCT-01",
+      "source_system": "KNOWLEDGE",
+      "source_record_id": "DOC-PRODUCT-AIR-01",
+      "source_version": "DOC-PRODUCT-AIR-01:v1",
+      "document_id": "DOC-PRODUCT-AIR-01",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "status": "published"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "evidence_id": "KNOW-EV-FILTER-01",
+      "source_system": "KNOWLEDGE",
+      "source_record_id": "DOC-FILTER-F-01",
+      "source_version": "DOC-FILTER-F-01:v1",
+      "document_id": "DOC-FILTER-F-01",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "status": "published"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "evidence_id": "KNOW-EV-FAQ-FILTER-01",
+      "source_system": "KNOWLEDGE",
+      "source_record_id": "DOC-FAQ-FILTER-01",
+      "source_version": "DOC-FAQ-FILTER-01:v1",
+      "document_id": "DOC-FAQ-FILTER-01",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "status": "published"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "evidence_id": "KNOW-EV-FAULT-01",
+      "source_system": "KNOWLEDGE",
+      "source_record_id": "DOC-FAULT-F23",
+      "source_version": "DOC-FAULT-F23:v1",
+      "document_id": "DOC-FAULT-F23",
+      "valid_from": "2026-02-01",
+      "valid_to": null,
+      "status": "published"
+    },
+    {
+      "tenant_id": "tenant-north",
+      "evidence_id": "KNOW-EV-SERIAL-01",
+      "source_system": "KNOWLEDGE",
+      "source_record_id": "DOC-SERIAL-RETURN",
+      "source_version": "DOC-SERIAL-RETURN:v1",
+      "document_id": "DOC-SERIAL-RETURN",
+      "valid_from": "2026-04-01",
+      "valid_to": null,
+      "status": "published"
+    },
+    {
+      "tenant_id": "tenant-south",
+      "evidence_id": "KNOW-EV-SOUTH-01",
+      "source_system": "KNOWLEDGE",
+      "source_record_id": "DOC-SOUTH-RETURN",
+      "source_version": "DOC-SOUTH-RETURN:v1",
+      "document_id": "DOC-SOUTH-RETURN",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "status": "published"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "tenant_id": "tenant-north",
+        "node_id": "product-air-01",
+        "kind": "Product",
+        "label": "Air purifier A",
+        "product_id": "product-air-01",
+        "name": "Air purifier A",
+        "model": "A",
+        "status": "active",
+        "version": 1
+      },
+      {
+        "tenant_id": "tenant-north",
+        "node_id": "filter-f-01",
+        "kind": "Accessory",
+        "label": "Filter F-01",
+        "accessory_id": "filter-f-01",
+        "name": "Filter F-01",
+        "model": "F-01",
+        "status": "active",
+        "version": 1
+      },
+      {
+        "tenant_id": "tenant-north",
+        "node_id": "fault-f23",
+        "kind": "FaultSymptom",
+        "label": "F-23",
+        "fault_id": "fault-f23",
+        "name": "F-23",
+        "description": "Intake sensor issue",
+        "severity": "unknown",
+        "version": 1
+      },
+      {
+        "tenant_id": "tenant-north",
+        "node_id": "service-sensor-check",
+        "kind": "ServiceItem",
+        "label": "Sensor inspection",
+        "service_id": "service-sensor-check",
+        "name": "Sensor inspection",
+        "description": "Record intake sensor test results in the work order",
+        "version": 1
+      },
+      {
+        "tenant_id": "tenant-north",
+        "node_id": "category-air-01",
+        "kind": "ProductCategory",
+        "label": "Air purifier",
+        "category_id": "category-air-01",
+        "name": "Air purifier",
+        "version": 1
+      },
+      {
+        "tenant_id": "tenant-north",
+        "node_id": "policy-return-01",
+        "kind": "Policy",
+        "label": "Return policy 2026",
+        "policy_id": "POL-RETURN-01",
+        "name": "Return policy 2026",
+        "policy_type": "return",
+        "status": "published",
+        "version": 2,
+        "effective_from": "2026-01-01",
+        "effective_to": "9999-12-31"
+      },
+      {
+        "tenant_id": "tenant-north",
+        "node_id": "policy-refund-02",
+        "kind": "Policy",
+        "label": "Refund policy",
+        "policy_id": "POL-REFUND-02",
+        "name": "Refund policy",
+        "policy_type": "refund",
+        "status": "published",
+        "version": 1,
+        "effective_from": "2026-01-01",
+        "effective_to": "9999-12-31"
+      },
+      {
+        "tenant_id": "tenant-south",
+        "node_id": "product-air-91",
+        "kind": "Product",
+        "label": "South purifier A",
+        "product_id": "product-air-91",
+        "name": "South purifier A",
+        "model": "A",
+        "status": "active",
+        "version": 1
+      },
+      {
+        "tenant_id": "tenant-south",
+        "node_id": "policy-return-91",
+        "kind": "Policy",
+        "label": "South return policy",
+        "policy_id": "POL-RETURN-91",
+        "name": "South return policy",
+        "policy_type": "return",
+        "status": "published",
+        "version": 1,
+        "effective_from": "2026-01-01",
+        "effective_to": "9999-12-31"
+      }
+    ],
+    "edges": [
+      {
+        "tenant_id": "tenant-north",
+        "edge_id": "KG-001",
+        "from": "product-air-01",
+        "relation": "COMPATIBLE_WITH",
+        "to": "filter-f-01",
+        "compatibility": "compatible",
+        "document_id": "DOC-FILTER-F-01",
+        "evidence_id": "KNOW-EV-FILTER-01",
+        "version": "DOC-FILTER-F-01:v1",
+        "valid_from": "2026-01-01",
+        "valid_to": "9999-12-31"
+      },
+      {
+        "tenant_id": "tenant-north",
+        "edge_id": "KG-002",
+        "from": "product-air-01",
+        "relation": "HAS_POLICY",
+        "to": "policy-return-01",
+        "priority": 1,
+        "document_id": "DOC-RETURN-CURRENT",
+        "evidence_id": "KNOW-EV-RETURN-02",
+        "version": "DOC-RETURN-CURRENT:v2",
+        "valid_from": "2026-01-01",
+        "valid_to": "9999-12-31"
+      },
+      {
+        "tenant_id": "tenant-north",
+        "edge_id": "KG-003",
+        "from": "product-air-01",
+        "relation": "HAS_FAULT_SYMPTOM",
+        "to": "fault-f23",
+        "severity": "unknown",
+        "document_id": "DOC-FAULT-F23",
+        "evidence_id": "KNOW-EV-FAULT-01",
+        "version": "DOC-FAULT-F23:v1",
+        "valid_from": "2026-02-01",
+        "valid_to": "9999-12-31"
+      },
+      {
+        "tenant_id": "tenant-north",
+        "edge_id": "KG-004",
+        "from": "fault-f23",
+        "relation": "SUGGESTS_SERVICE",
+        "to": "service-sensor-check",
+        "priority": 1,
+        "document_id": "DOC-FAULT-F23",
+        "evidence_id": "KNOW-EV-FAULT-01",
+        "version": "DOC-FAULT-F23:v1",
+        "valid_from": "2026-02-01",
+        "valid_to": "9999-12-31"
+      },
+      {
+        "tenant_id": "tenant-north",
+        "edge_id": "KG-005",
+        "from": "policy-return-01",
+        "relation": "APPLIES_TO",
+        "to": "category-air-01",
+        "conditions": "Air purifier category",
+        "document_id": "DOC-RETURN-CURRENT",
+        "evidence_id": "KNOW-EV-RETURN-02",
+        "version": "DOC-RETURN-CURRENT:v2",
+        "valid_from": "2026-01-01",
+        "valid_to": "9999-12-31"
+      },
+      {
+        "tenant_id": "tenant-north",
+        "edge_id": "KG-006",
+        "from": "product-air-01",
+        "relation": "HAS_POLICY",
+        "to": "policy-refund-02",
+        "priority": 1,
+        "document_id": "DOC-REFUND-CURRENT",
+        "evidence_id": "KNOW-EV-REFUND-01",
+        "version": "DOC-REFUND-CURRENT:v1",
+        "valid_from": "2026-01-01",
+        "valid_to": "9999-12-31"
+      },
+      {
+        "tenant_id": "tenant-south",
+        "edge_id": "KG-091",
+        "from": "product-air-91",
+        "relation": "HAS_POLICY",
+        "to": "policy-return-91",
+        "priority": 1,
+        "document_id": "DOC-SOUTH-RETURN",
+        "evidence_id": "KNOW-EV-SOUTH-01",
+        "version": "DOC-SOUTH-RETURN:v1",
+        "valid_from": "2026-01-01",
+        "valid_to": "9999-12-31"
+      }
+    ]
+  }
+}

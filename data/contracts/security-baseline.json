@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "profile": "docs-data-baseline",
+  "status": "engineering_baseline_requires_enterprise_approval_before_production",
+  "identity": {
+    "external_http": "oauth2.1_resource_server",
+    "service_to_service": "mTLS_workload_identity",
+    "validate_issuer": true,
+    "validate_audience_per_resource": true,
+    "exchange_user_context_per_tenant": true,
+    "shared_cross_tenant_tokens": false,
+    "token_passthrough": false,
+    "authorize_each_tool_call": true,
+    "step_up_for_high_risk_writes": true
+  },
+  "transport": { "minimum_tls": "1.2", "require_https_outside_loopback": true, "validate_origin": true },
+  "model": {
+    "production_default": "private_endpoint",
+    "cloud_enabled_by_default": false,
+    "cloud_gate": ["data_classification", "purpose_review", "cross_border_assessment_if_applicable", "processor_contract_and_DPA", "security_approval"],
+    "record_provider_model_region_and_version_in_eval_manifest": true
+  },
+  "tool_registry": {
+    "source": "data/contracts/mcp-tools.json",
+    "pin_sha256_per_release": true,
+    "scan_tool_descriptions_and_schemas": true,
+    "require_two_person_change_approval": true,
+    "treat_tool_output_as_untrusted_data": true
+  },
+  "data_classes": [
+    { "name": "public_knowledge", "examples": ["published product manuals"], "model_access": "approved retrieval only" },
+    { "name": "internal_business", "examples": ["order status", "warehouse inspection", "refund state"], "model_access": "minimum necessary, authorized scope, redact identifiers" },
+    { "name": "personal_sensitive", "examples": ["identity credentials", "financial account identifiers", "full address and contact details"], "model_access": "deny by default; no prompt/log/checkpoint copy" },
+    { "name": "secrets", "examples": ["API keys", "access tokens", "payment credentials"], "model_access": "never expose to model or logs" }
+  ],
+  "retention": {
+    "session_store_seconds": 259200,
+    "checkpoint_days": 30,
+    "raw_trace_days": 30,
+    "security_event_log_days_minimum": 180,
+    "personal_information_rule": "shortest period necessary for the documented purpose, subject to applicable mandatory retention and legal hold",
+    "business_transaction_records": "per applicable law, contract, and approved retention schedule",
+    "pipia_records_years_minimum": 3,
+    "deletion": "authenticated request, scope discovery, deletion or anonymization across replicas/indexes/backups at expiry, tombstone and auditable completion status; legal hold is access-restricted and time-bounded"
+  },
+  "payment_data": {
+    "store_pan": false,
+    "store_cvv": false,
+    "store_payment_credentials": false,
+    "use_channel_tokens_and_masked_references": true,
+    "pci_scope": "confirm with acquirer/QSA before production; do not claim compliance from this design"
+  },
+  "limits": {
+    "requests_per_subject_per_minute": 60,
+    "requests_per_tenant_per_minute": 600,
+    "concurrent_sessions_per_tenant": 100,
+    "daily_requests_per_tenant": 10000,
+    "tool_call_budget_per_request": 8
+  },
+  "rollout": {
+    "stages_percent": [0, 1, 5, 25, 100],
+    "stage_zero": "shadow_only_no_writes",
+    "rollback_if_server_error_rate_exceeds_baseline_multiplier": 2,
+    "immediate_rollback_events": ["unauthorized_access", "duplicate_payment", "unverified_success_claim", "tenant_data_leak"]
+  },
+  "approval_gates": ["security_owner", "privacy_or_legal_owner", "payment_owner", "warehouse_owner", "business_metric_owner", "operations_owner"]
+}

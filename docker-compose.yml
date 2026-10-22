@@ -1,0 +1,209 @@
+# 本地基础服务编排：仅承载 MySQL、Redis、RabbitMQ 和 Neo4j（项目目录结构.md）。
+# 开发向量后端使用进程内 Chroma（VECTOR_BACKEND=chroma），不在此编排，
+# 也不要求开发机同时运行两套向量后端；生产 Milvus 在部署阶段单独提供。
+# 凭据默认值与 .env.example 对齐，仅用于本地开发，生产凭据不得写入本文件。
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: after-sales-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change-me}
+      MYSQL_DATABASE: after_sales
+      MYSQL_USER: after_sales
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-me}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-change-me}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: after-sales-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: after-sales-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: after_sales
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-change-me}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  neo4j:
+    # 企业版镜像：社区版仅支持单一默认库且 5.26 移除了 server.default_database 设置，
+    # 无法满足规格 13 章强制的 NEO4J_DATABASE=after_sales_knowledge。
+    # Neo4j 企业版对本地开发免费；生产部署授权在步骤35部署阶段单独确认。
+    image: neo4j:5.26-enterprise
+    container_name: after-sales-neo4j
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-change-me}
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+
+  # 本地应用进程使用独立 profile，不改变默认启动的基础设施服务。
+  api:
+    profiles: ["app"]
+    build: .
+    command: ["python", "-m", "bootstrap.api_main"]
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      MCP_SERVER_URL: http://mcp:8001/mcp
+      MYSQL_URL: mysql+pymysql://after_sales:${MYSQL_PASSWORD:-change-me}@mysql:3306/after_sales
+      REDIS_URL: redis://redis:6379/0
+      RABBITMQ_URL: amqp://after_sales:${RABBITMQ_PASSWORD:-change-me}@rabbitmq:5672/
+      LLM_PROVIDER: ${LLM_PROVIDER:-deepseek}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.deepseek.com/v1}
+      LLM_MODEL: ${LLM_MODEL:-deepseek-chat}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      VECTOR_BACKEND: ${VECTOR_BACKEND:-chroma}
+      CHROMA_PERSIST_DIR: /app/data/generated/chroma
+      ADDRESS_ENCRYPT_KEY: ${ADDRESS_ENCRYPT_KEY:-}
+      MEMORY_FALLBACK_ENABLED: "false"
+      NEO4J_USERNAME: neo4j
+      NEO4J_PASSWORD: ""
+      NEO4J_QUERY_USERNAME: ${NEO4J_QUERY_USERNAME:-knowledge_reader}
+      NEO4J_QUERY_PASSWORD: ${NEO4J_QUERY_PASSWORD:-}
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_DATABASE: ${NEO4J_DATABASE:-after-sales-knowledge}
+      NEO4J_READ_ONLY: "true"
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      mcp:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+
+  mcp:
+    profiles: ["app"]
+    build: .
+    command: ["python", "-m", "bootstrap.mcp_main"]
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      MCP_SERVER_HOST: 0.0.0.0
+      MCP_SERVER_PORT: 8001
+      MYSQL_URL: mysql+pymysql://after_sales:${MYSQL_PASSWORD:-change-me}@mysql:3306/after_sales
+      REDIS_URL: redis://redis:6379/0
+      RABBITMQ_URL: amqp://after_sales:${RABBITMQ_PASSWORD:-change-me}@rabbitmq:5672/
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USERNAME: neo4j
+      NEO4J_PASSWORD: ""
+      NEO4J_QUERY_USERNAME: ${NEO4J_QUERY_USERNAME:-knowledge_reader}
+      NEO4J_QUERY_PASSWORD: ${NEO4J_QUERY_PASSWORD:-}
+      NEO4J_DATABASE: ${NEO4J_DATABASE:-after-sales-knowledge}
+      NEO4J_READ_ONLY: "true"
+      KNOWLEDGE_LOCAL_TOOLS_ENABLED: ${KNOWLEDGE_LOCAL_TOOLS_ENABLED:-false}
+      VECTOR_BACKEND: ${VECTOR_BACKEND:-chroma}
+      CHROMA_PERSIST_DIR: /app/data/generated/chroma
+      ADDRESS_ENCRYPT_KEY: ${ADDRESS_ENCRYPT_KEY:-}
+      MEMORY_FALLBACK_ENABLED: "false"
+    volumes:
+      - ./data/generated:/app/data/generated
+    ports:
+      - "127.0.0.1:${MCP_SERVER_PORT:-8001}:8001"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health/live', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+
+  worker:
+    profiles: ["app"]
+    build: .
+    command: ["python", "-m", "bootstrap.worker_main"]
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      MCP_SERVER_URL: http://mcp:8001/mcp
+      MYSQL_URL: mysql+pymysql://after_sales:${MYSQL_PASSWORD:-change-me}@mysql:3306/after_sales
+      REDIS_URL: redis://redis:6379/0
+      RABBITMQ_URL: amqp://after_sales:${RABBITMQ_PASSWORD:-change-me}@rabbitmq:5672/
+      LLM_PROVIDER: ${LLM_PROVIDER:-deepseek}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.deepseek.com/v1}
+      LLM_MODEL: ${LLM_MODEL:-deepseek-chat}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      MEMORY_FALLBACK_ENABLED: "false"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      mcp:
+        condition: service_healthy
+    restart: unless-stopped
+
+  migrate:
+    profiles: ["migrate"]
+    build: .
+    command: ["python", "-m", "bootstrap.migrate", "apply"]
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      MYSQL_URL: mysql+pymysql://after_sales:${MYSQL_PASSWORD:-change-me}@mysql:3306/after_sales
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  mysql-data:
+  redis-data:
+  rabbitmq-data:
+  neo4j-data:

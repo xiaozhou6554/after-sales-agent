@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "mock-v2",
+  "reference_time": "2026-10-19T04:00:00Z",
+  "synthetic_only": true,
+  "shipment_count": 3,
+  "files": {
+    "data/mock/v2/logistics.json": "e75668f6aa0e547c25614b87212abfe5c7a022dff79dff6950b8d736bc94ee27",
+    "data/mock/v2/systems.json": "9b67d95ef794164739e844bc7b6107a46f669afa2fdbe000686fd79035cfdccf"
+  }
+}

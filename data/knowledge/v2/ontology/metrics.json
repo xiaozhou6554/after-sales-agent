@@ -1,0 +1,75 @@
+[
+  {
+    "metric_id": "return_passed_item_rate",
+    "display_name": "验收通过退货件数率",
+    "version": 1,
+    "numerator": "WMS accepted return item quantity",
+    "denominator": "signed item quantity in the same shipment cohort",
+    "formula": "sum(numerator) / sum(denominator)",
+    "sample_unit": "signed_item_quantity",
+    "minimum_sample": 100,
+    "window_days": 30,
+    "ranking_role": "supervisor_default_candidate",
+    "default_after_approval": true,
+    "production_enabled": false,
+    "mock_evaluable": true,
+    "definition_status": "pending_business_finance_approval",
+    "business_approval": "pending"
+  },
+  {
+    "metric_id": "return_application_item_rate",
+    "display_name": "退货申请率",
+    "version": 1,
+    "numerator_options": [
+      "submitted_return_application_count",
+      "return_application_line_count",
+      "requested_return_item_quantity"
+    ],
+    "denominator_options": [
+      "eligible_paid_order_count",
+      "eligible_paid_order_line_count",
+      "eligible_paid_item_quantity"
+    ],
+    "cohort_time_options": [
+      "application_created_at",
+      "paid_at",
+      "shipment_cohort"
+    ],
+    "formula": null,
+    "sample_unit": null,
+    "minimum_sample": 100,
+    "window_days": 30,
+    "ranking_role": "independent_metric",
+    "default_after_approval": false,
+    "production_enabled": false,
+    "mock_evaluable": false,
+    "definition_status": "pending_business_finance_approval",
+    "calculation_status": "blocked_pending_business_finance_approval",
+    "business_approval": "pending"
+  },
+  {
+    "metric_id": "refund_successful_line_rate",
+    "version": 1,
+    "numerator": "successfully refunded payment detail count",
+    "denominator": "paid detail count in the same payment cohort",
+    "formula": "sum(numerator) / sum(denominator)",
+    "sample_unit": "paid_detail_count",
+    "minimum_sample": 100,
+    "window_days": 30,
+    "business_approval": "pending",
+    "production_enabled": false
+  },
+  {
+    "metric_id": "refund_goods_amount_rate",
+    "version": 1,
+    "numerator": "successfully refunded goods amount in minor currency units",
+    "denominator": "paid goods amount in minor currency units",
+    "formula": "sum(numerator) / sum(denominator)",
+    "shipping_treatment": "reported separately",
+    "sample_unit": "paid_detail_count",
+    "minimum_sample": 100,
+    "window_days": 30,
+    "business_approval": "pending",
+    "production_enabled": false
+  }
+]

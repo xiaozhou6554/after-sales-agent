@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:after-sales-agent:mcp-tools:v1",
+  "title": "Approved MCP tool manifest",
+  "type": "object",
+  "required": ["schema_version", "manifest_version", "response_schema_ref", "tools"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "manifest_version": { "type": "integer", "minimum": 1 },
+    "response_schema_ref": { "const": "data/contracts/mcp-response.schema.json" },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "owner", "access", "input_schema", "side_effect", "auth_scopes", "response_schema_ref"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,63}$" },
+          "owner": { "type": "string" },
+          "access": { "enum": ["read", "write", "service_only"] },
+          "input_schema": { "type": "object" },
+          "response_schema_ref": { "type": "string", "pattern": "^data/contracts/mcp-response\\.schema\\.json#/\\$defs/tool_data_[a-z][a-z0-9_]{1,63}$" },
+          "side_effect": { "enum": ["none", "business", "payment", "warehouse"] },
+          "auth_scopes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "requires_confirmation": { "type": "boolean" },
+          "idempotency_required": { "type": "boolean" },
+          "description_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,84 @@
+services:
+  woocommerce-db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: ${WOO_DB_NAME:-woocommerce}
+      MARIADB_USER: ${WOO_DB_USER:-woocommerce}
+      MARIADB_PASSWORD: ${WOO_DB_PASSWORD:-local-woocommerce-only}
+      MARIADB_ROOT_PASSWORD: ${WOO_DB_ROOT_PASSWORD:-local-root-only}
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - woocommerce-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  wordpress:
+    image: wordpress:php8.3-apache
+    depends_on:
+      woocommerce-db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: woocommerce-db:3306
+      WORDPRESS_DB_NAME: ${WOO_DB_NAME:-woocommerce}
+      WORDPRESS_DB_USER: ${WOO_DB_USER:-woocommerce}
+      WORDPRESS_DB_PASSWORD: ${WOO_DB_PASSWORD:-local-woocommerce-only}
+      WORDPRESS_DEBUG: "0"
+    ports:
+      - "127.0.0.1:8088:80"
+    volumes:
+      - woocommerce-wordpress:/var/www/html
+
+  wp-cli:
+    image: wordpress:cli-php8.3
+    profiles: ["setup"]
+    user: "33:33"
+    depends_on:
+      woocommerce-db:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    environment:
+      WORDPRESS_DB_HOST: woocommerce-db:3306
+      WORDPRESS_DB_NAME: ${WOO_DB_NAME:-woocommerce}
+      WORDPRESS_DB_USER: ${WOO_DB_USER:-woocommerce}
+      WORDPRESS_DB_PASSWORD: ${WOO_DB_PASSWORD:-local-woocommerce-only}
+      WOO_SITE_URL: ${WOO_SITE_URL:-http://localhost:8088}
+      WOO_SITE_TITLE: ${WOO_SITE_TITLE:-After Sales Local Test Store}
+      WOO_ADMIN_USER: ${WOO_ADMIN_USER:-local-admin}
+      WOO_ADMIN_PASSWORD: ${WOO_ADMIN_PASSWORD:-local-admin-only}
+      WOO_ADMIN_EMAIL: ${WOO_ADMIN_EMAIL:-local-admin@example.test}
+      WOO_PLUGIN_VERSION: ${WOO_PLUGIN_VERSION:-11.2.1}
+    volumes:
+      - woocommerce-wordpress:/var/www/html
+    entrypoint: ["sh", "-ec"]
+    command:
+      - |
+        until wp core version --path=/var/www/html --allow-root >/dev/null 2>&1; do sleep 2; done
+        if ! wp core is-installed --path=/var/www/html --allow-root >/dev/null 2>&1; then
+          wp core install \
+            --path=/var/www/html \
+            --url="$${WOO_SITE_URL}" \
+            --title="$${WOO_SITE_TITLE}" \
+            --admin_user="$${WOO_ADMIN_USER}" \
+            --admin_password="$${WOO_ADMIN_PASSWORD}" \
+            --admin_email="$${WOO_ADMIN_EMAIL}" \
+            --skip-email --allow-root
+        fi
+        if ! wp plugin is-installed woocommerce --path=/var/www/html --allow-root >/dev/null 2>&1; then
+          curl --fail --silent --show-error --location --retry 3 \
+            "https://downloads.wordpress.org/plugin/woocommerce.$${WOO_PLUGIN_VERSION}.zip" \
+            --output /tmp/woocommerce.zip
+          wp plugin install /tmp/woocommerce.zip --activate --path=/var/www/html --allow-root
+        fi
+        wp plugin activate woocommerce --path=/var/www/html --allow-root
+        wp rewrite structure '/%postname%/' --path=/var/www/html --allow-root
+        wp rewrite flush --hard --path=/var/www/html --allow-root
+        echo 'WordPress and WooCommerce are ready. Change the local admin password before use.'
+
+volumes:
+  woocommerce-db-data:
+  woocommerce-wordpress:

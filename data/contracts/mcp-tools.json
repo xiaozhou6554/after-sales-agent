@@ -1,0 +1,811 @@
+{
+  "schema_version": "1.0",
+  "manifest_version": 3,
+  "response_schema_ref": "data/contracts/mcp-response.schema.json",
+  "tools": [
+    {
+      "name": "query_order",
+      "owner": "OMS",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "order:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Read authorized order facts; absent and inaccessible records share one public response.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "order_id"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_query_order"
+    },
+    {
+      "name": "query_payment",
+      "owner": "PAYMENT",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "payment:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Read payment and refund execution state from the authoritative payment source.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "order_id"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_query_payment"
+    },
+    {
+      "name": "query_tracking",
+      "owner": "LOGISTICS",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "logistics:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Read shipment tracking facts by a tracking reference bound to an authorized order.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "tracking_number"
+        ],
+        "properties": {
+          "tracking_number": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_query_tracking"
+    },
+    {
+      "name": "query_logistics",
+      "owner": "LOGISTICS",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "logistics:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Return an authorized shipment summary by order or tracking reference; the server verifies record ownership.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tracking_number": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "order_id"
+            ]
+          },
+          {
+            "required": [
+              "tracking_number"
+            ]
+          }
+        ],
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_query_logistics"
+    },
+    {
+      "name": "check_delivery_exception",
+      "owner": "LOGISTICS",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "logistics:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Read authoritative delivery exception codes and evidence for an authorized order.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "order_id"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_check_delivery_exception"
+    },
+    {
+      "name": "search_knowledge_base",
+      "owner": "KNOWLEDGE",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "knowledge:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Run vector and BM25 retrieval in parallel against one pinned knowledge release and return evidence references.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "top_k": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "release_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_search_knowledge_base"
+    },
+    {
+      "name": "query_knowledge_graph",
+      "owner": "KNOWLEDGE",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "knowledge:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Query approved, parameterized knowledge graph relations; arbitrary Cypher is never accepted.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "entity_names",
+          "relation_types"
+        ],
+        "properties": {
+          "entity_names": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "relation_types": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "enum": [
+                "BELONGS_TO",
+                "HAS_VERSION",
+                "HAS_ACCESSORY",
+                "COMPATIBLE_WITH",
+                "NOT_COMPATIBLE_WITH",
+                "HAS_FEATURE",
+                "SUITABLE_FOR",
+                "HAS_FAULT_SYMPTOM",
+                "SUGGESTS_SERVICE",
+                "HAS_POLICY",
+                "APPLIES_TO",
+                "CONTAINS_CLAUSE",
+                "HAS_WARRANTY",
+                "SUPPORTED_BY",
+                "DESCRIBES",
+                "RELATED_TO"
+              ]
+            }
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_query_knowledge_graph"
+    },
+    {
+      "name": "search_hybrid_knowledge",
+      "owner": "KNOWLEDGE",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "knowledge:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Run version-pinned RAG and KG retrieval in parallel, preserve route evidence, and report conflicts.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "query",
+          "entity_names",
+          "relation_types"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "entity_names": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "relation_types": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "enum": [
+                "COMPATIBLE_WITH",
+                "HAS_POLICY",
+                "HAS_FAULT",
+                "HAS_REMEDY",
+                "APPLIES_TO"
+              ]
+            }
+          },
+          "release_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_search_hybrid_knowledge"
+    },
+    {
+      "name": "get_policy_detail",
+      "owner": "KNOWLEDGE",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "knowledge:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Read a versioned policy by exact name, alias, or stable ID and effective date; ambiguous names require clarification.",
+      "input_schema": {
+        "type": "object",
+        "oneOf": [
+          {"required": ["policy_name"]},
+          {"required": ["policy_id"]}
+        ],
+        "properties": {
+          "policy_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "policy_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_get_policy_detail"
+    },
+    {
+      "name": "check_refund_policy",
+      "owner": "AFTER_SALES",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "refund:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Check refund preconditions and return reasons without creating an application.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "order_id",
+          "reason_code"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "reason_code": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_check_refund_policy"
+    },
+    {
+      "name": "check_shipping_address_change",
+      "owner": "OMS",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "order:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Check address-change eligibility and return the current authorized order revision and denial reasons.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "order_id"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_check_shipping_address_change"
+    },
+    {
+      "name": "calculate_refund",
+      "owner": "AFTER_SALES",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "refund:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Calculate a server-side quote with line-level amount and currency breakdown.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "order_id",
+          "reason_code",
+          "lines"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "reason_code": {
+            "type": "string"
+          },
+          "lines": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "order_line_id",
+                "quantity"
+              ],
+              "properties": {
+                "order_line_id": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_calculate_refund"
+    },
+    {
+      "name": "create_refund_request",
+      "owner": "AFTER_SALES",
+      "access": "write",
+      "side_effect": "business",
+      "auth_scopes": [
+        "refund:request"
+      ],
+      "requires_confirmation": true,
+      "idempotency_required": true,
+      "description": "Create a pending-review request only after server-bound customer confirmation and one-time verification; confirmation and idempotency are injected from OperationContext, not model arguments.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "order_id",
+          "reason_code"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "reason_code": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_create_refund_request"
+    },
+    {
+      "name": "query_refund_request",
+      "owner": "AFTER_SALES",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "refund:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Read a refund application and its independent review, return and funds states by request ID; pending operation recovery uses server-injected OperationContext.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "refund_request_id"
+        ],
+        "properties": {
+          "refund_request_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_query_refund_request"
+    },
+    {
+      "name": "create_ticket",
+      "owner": "TICKET",
+      "access": "write",
+      "side_effect": "business",
+      "auth_scopes": [
+        "ticket:create"
+      ],
+      "requires_confirmation": true,
+      "idempotency_required": true,
+      "description": "Create a bounded after-sales ticket from content shown to the user before submission; confirmation and idempotency are injected from OperationContext.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "priority"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "priority": {
+            "enum": [
+              "low",
+              "normal",
+              "high"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_create_ticket"
+    },
+    {
+      "name": "query_ticket",
+      "owner": "TICKET",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "ticket:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Read an authorized ticket summary with ownership and tenant checks.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "ticket_id"
+        ],
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_query_ticket"
+    },
+    {
+      "name": "handoff_to_human",
+      "owner": "TICKET",
+      "access": "write",
+      "side_effect": "business",
+      "auth_scopes": [
+        "ticket:create"
+      ],
+      "requires_confirmation": true,
+      "idempotency_required": true,
+      "description": "Request a human handoff with a bounded summary; the server verifies the current conversation and injects confirmation and idempotency context.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "reason",
+          "summary"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_handoff_to_human"
+    },
+    {
+      "name": "query_after_sales_metrics",
+      "owner": "ANALYTICS",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "analytics:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Query versioned product after-sales metrics with source watermarks, quality gates and evidence. return_application_item_rate is an independent metric and must return blocked until its business/finance definition is approved; return_passed_item_rate is the proposed supervisor default and remains non-production until approved.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "metric_id",
+          "cohort_start",
+          "cohort_end"
+        ],
+        "properties": {
+          "metric_id": {
+            "enum": [
+              "return_application_item_rate",
+              "return_passed_item_rate",
+              "refund_successful_line_rate",
+              "refund_goods_amount_rate"
+            ]
+          },
+          "cohort_start": {
+            "type": "string",
+            "format": "date"
+          },
+          "cohort_end": {
+            "type": "string",
+            "format": "date"
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "product_id",
+                "sku_id",
+                "channel",
+                "region",
+                "warehouse",
+                "reason_code"
+              ]
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_query_after_sales_metrics"
+    },
+    {
+      "name": "explain_anomaly",
+      "owner": "INVESTIGATION",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "incident:read",
+        "analytics:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Explain an authorized immutable anomaly snapshot using evidence-backed factors; never changes source records.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "investigation_id"
+        ],
+        "properties": {
+          "investigation_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_explain_anomaly"
+    },
+    {
+      "name": "query_shipping_address_change",
+      "owner": "OMS",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "order:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Read a scoped address-change operation status without disclosing inaccessible resources.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "address_change_id"
+        ],
+        "properties": {
+          "address_change_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_query_shipping_address_change"
+    },
+    {
+      "name": "update_shipping_address",
+      "owner": "OMS",
+      "access": "write",
+      "side_effect": "business",
+      "auth_scopes": [
+        "order:address:update"
+      ],
+      "requires_confirmation": true,
+      "idempotency_required": true,
+      "description": "Apply a server-bound address reference after customer confirmation and order-version validation; confirmation, expected revision and idempotency are injected from OperationContext.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "order_id",
+          "address_change_id"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "address_change_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_update_shipping_address"
+    },
+    {
+      "name": "update_ticket",
+      "owner": "TICKET",
+      "access": "write",
+      "side_effect": "business",
+      "auth_scopes": [
+        "ticket:update"
+      ],
+      "requires_confirmation": true,
+      "idempotency_required": true,
+      "description": "Update a scoped ticket using content-bound confirmation and revision guard; confirmation, expected revision and idempotency are injected from OperationContext.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "ticket_id",
+          "content"
+        ],
+        "properties": {
+          "ticket_id": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_update_ticket"
+    },
+    {
+      "name": "query_return_progress",
+      "owner": "WMS",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "return:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Read authorized receipt and inspection progress; no warehouse write is exposed to the model.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "return_id"
+        ],
+        "properties": {
+          "return_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_query_return_progress"
+    },
+    {
+      "name": "query_refund_execution",
+      "owner": "PAYMENT",
+      "access": "read",
+      "side_effect": "none",
+      "auth_scopes": [
+        "refund:read"
+      ],
+      "requires_confirmation": false,
+      "idempotency_required": false,
+      "description": "Read authoritative funds status and evidence for a refund execution.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "refund_request_id"
+        ],
+        "properties": {
+          "refund_request_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "response_schema_ref": "data/contracts/mcp-response.schema.json#/$defs/tool_data_query_refund_execution"
+    }
+  ]
+}
