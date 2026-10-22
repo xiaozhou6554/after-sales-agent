@@ -13,6 +13,12 @@ const el = (tag, text, className) => {
   return node;
 };
 
+export function formatAuthorizedCustomerLabel(customer) {
+  const name = typeof customer.display_name_masked === 'string' ? customer.display_name_masked : '客户';
+  const customerId = typeof customer.customer_id === 'string' ? customer.customer_id.trim() : '';
+  return customerId ? `${name} · ${customerId}` : name;
+}
+
 export function mountWorkbenchPage(root, session, identity) {
   let customerId = null;
   let busy = false;
@@ -262,8 +268,12 @@ export function mountWorkbenchPage(root, session, identity) {
     try {
       if (!identity.scopes.includes('customer:read')) throw new Error('当前账号没有客户查询权限。');
       const response = await listWorkbenchCustomers(session.token);
-      for (const item of response.data.items || []) select.append(new Option(item.display_name_masked, item.customer_id));
-      note(response.data.items?.length ? '客户范围由服务端授权；切换后将重新查询工作台数据。' : '当前账号没有可显示的授权客户。');
+      for (const item of response.data.items || []) {
+        select.append(new Option(formatAuthorizedCustomerLabel(item), item.customer_id));
+      }
+      note(response.data.items?.length
+        ? '按订单的售后客户编号选择客户；列表只包含当前坐席已授权的客户。'
+        : '当前账号没有可显示的授权客户。');
       if (identity.scopes.includes('handoff:read')) await loadHandoffs();
       else appendEmpty(handoffList, '当前账号没有人工队列读取权限。');
       if (identity.scopes.includes('refund:review')) await loadRefunds();
